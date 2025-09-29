@@ -1,0 +1,46 @@
+{
+  "name": "hilal-software_chatbot_e2e_automation_framework",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "format": "npx prettier --write .",
+    "test": "playwright test",
+    "test:serial": "npx playwright test --workers=1",
+    "test:headed": "npx playwright test --headed",
+    "test:smoke": "npx playwright test --grep @P1 --workers=1 --project=Chrome --ui",
+    "test:chrome": "npx playwright test --project=Chrome",
+    "test:firefox": "npx playwright test --project=Firefox",
+    "test:safari": "npx playwright test --project=Safari",
+    "test:debug": "npx playwright test --debug",
+    "allure:clean": "rm -rf allure-results",
+    "allure:generate": "allure generate ./allure-results --clean -o allure-report",
+    "allure:report": "npm run allure:generate && allure open allure-report"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://arsalsid: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@github.com/arsalsid/Hilal-Software_Chatbot_E2E_Automation_Framework.git"
+  },
+  "keywords": [
+    "Playwright",
+    "e2e",
+    "Test Automation",
+    "Chatbot",
+    "Javascript"
+  ],
+  "author": "Muhammad Arsalan",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/arsalsid/Hilal-Software_Chatbot_E2E_Automation_Framework/issues"
+  },
+  "homepage": "https://github.com/arsalsid/Hilal-Software_Chatbot_E2E_Automation_Framework#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.55.0",
+    "@types/node": "^24.4.0",
+    "allure-commandline": "^2.34.1",
+    "allure-playwright": "^3.4.1",
+    "dotenv": "^17.2.2",
+    "rimraf": "^6.0.1"
+  }
+}

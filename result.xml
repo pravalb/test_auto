@@ -1,0 +1,71 @@
+<testsuites id="" name="" tests="2" failures="1" skipped="1" errors="0" time="26.973731">
+<testsuite name="TC_01_login.spec.js" timestamp="2025-09-23T11:29:54.694Z" hostname="Chrome" tests="2" failures="1" skipped="1" time="19.554" errors="0">
+<testcase name="User should be able to login with valid credentials" classname="TC_01_login.spec.js" time="19.554">
+<failure message="TC_01_login.spec.js:11:5 User should be able to login with valid credentials" type="FAILURE">
+<![CDATA[  [Chrome] › TC_01_login.spec.js:11:5 › User should be able to login with valid credentials ────────
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator:  getByText('Inbox')
+    Expected: visible
+    Received: <element(s) not found>
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toBeVisible" with timeout 5000ms
+      - waiting for getByText('Inbox')
+
+
+       at ..\pages\loginPage.js:26
+
+      24 |         await this.waitforPageLoad();
+      25 |         await this.backToAppButton.click();
+    > 26 |         await expect(this.page.getByText(dashboardChatbotTitle)).toBeVisible();
+         |                                                                  ^
+      27 |         
+      28 |     }
+      29 |
+        at LoginPage.performLogin (D:\Hilal-Software_Chatbot_E2E_Automation_Framework\pages\loginPage.js:26:66)
+        at D:\Hilal-Software_Chatbot_E2E_Automation_Framework\tests\TC_01_login.spec.js:15:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\test-results\TC_01_login-User-should-be-e0e8e-ogin-with-valid-credentials-Chrome\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\test-results\TC_01_login-User-should-be-e0e8e-ogin-with-valid-credentials-Chrome\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\test-results\TC_01_login-User-should-be-e0e8e-ogin-with-valid-credentials-Chrome\error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    ..\test-results\TC_01_login-User-should-be-e0e8e-ogin-with-valid-credentials-Chrome\trace.zip
+    Usage:
+
+        npx playwright show-trace ..\test-results\TC_01_login-User-should-be-e0e8e-ogin-with-valid-credentials-Chrome\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results\TC_01_login-User-should-be-e0e8e-ogin-with-valid-credentials-Chrome\test-failed-1.png]]
+
+[[ATTACHMENT|test-results\TC_01_login-User-should-be-e0e8e-ogin-with-valid-credentials-Chrome\video.webm]]
+
+[[ATTACHMENT|test-results\TC_01_login-User-should-be-e0e8e-ogin-with-valid-credentials-Chrome\error-context.md]]
+
+[[ATTACHMENT|test-results\TC_01_login-User-should-be-e0e8e-ogin-with-valid-credentials-Chrome\trace.zip]]
+]]>
+</system-out>
+</testcase>
+<testcase name="User should not be able to login with Invalid credentials" classname="TC_01_login.spec.js" time="0">
+<properties>
+<property name="skip" value="">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+</testsuites>
