@@ -1,5 +1,35 @@
 {
     "loginPageTitle": "Login - MyApp",
     "displayName": "Pravilika",
-    "dashboardChatbotTitle": "Inbox"
+    "dashboardChatbotTitle": "Inbox",
+    "profileSettings": {
+        "defaultDisplayName": "Basudevi024",
+        "defaultEmail": "basul735@gmail.com",
+        "defaultTimezone": "UTC-07:00 Hermosillo",
+        "testDisplayNames": [
+            "TestUser_001",
+            "UpdatedUser_002",
+            "ProfileTest_003"
+        ],
+        "testTimezones": [
+            "UTC-05:00 Eastern Time",
+            "UTC+00:00 Greenwich Mean Time",
+            "UTC+05:30 India Standard Time",
+            "UTC-08:00 Pacific Time"
+        ],
+        "invalidDisplayNames": [
+            "",
+            "   ",
+            "a",
+            "ab",
+            "ThisIsAVeryLongDisplayNameThatExceedsTheMaximumAllowedCharacterLimitForDisplayNames"
+        ],
+        "validationMessages": {
+            "displayNameRequired": "Display name is required",
+            "displayNameTooShort": "Display name must be at least 3 characters",
+            "displayNameTooLong": "Display name must be less than 50 characters",
+            "updateSuccess": "Profile updated successfully",
+            "updateError": "Failed to update profile"
+        }
+    }
 }
