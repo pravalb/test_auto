@@ -58,9 +58,9 @@ class ProfileSettingsPage extends BasePage {
 
     async navigateToProfileSettings() {
         // Navigate to profile settings page
-        // Note: BASE_URL points to login page, so we need to construct the settings URL
-        const baseUrl = process.env.BASE_URL.replace('/login', '');
-        await this.page.goto(`${baseUrl}/settings/profile`);
+        // Note: After login, the app switches from auth.hilalsoftware.tools to chat.hilalsoftware.tools
+        // and removes the /hilal-chatbot path
+        await this.page.goto('https://dev.chat.hilalsoftware.tools/settings/profile');
         await this.waitforPageLoad();
         await expect(this.settingsTitle).toBeVisible();
     }
