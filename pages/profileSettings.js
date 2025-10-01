@@ -27,7 +27,9 @@ class ProfileSettingsPage extends BasePage {
         
         // Email section
         this.emailLabel = page.getByText('Email');
-        this.emailValue = page.getByText('basul735@gmail.com');
+        this.emailValue = page.locator('[data-testid="email-value"]').or(
+            page.locator('text=Email').locator('xpath=..').locator('text=@')
+        );
         
         // Timezone section
         this.timezoneLabel = page.getByText('Timezone');
@@ -53,8 +55,10 @@ class ProfileSettingsPage extends BasePage {
     }
 
     async navigateToProfileSettings() {
-        // Assuming navigation from main dashboard or settings page
-        await this.page.goto(`${process.env.BASE_URL}/settings/profile`);
+        // Navigate to profile settings page
+        // Note: BASE_URL points to login page, so we need to construct the settings URL
+        const baseUrl = process.env.BASE_URL.replace('/login', '');
+        await this.page.goto(`${baseUrl}/settings/profile`);
         await this.waitforPageLoad();
         await expect(this.settingsTitle).toBeVisible();
     }
@@ -75,6 +79,13 @@ class ProfileSettingsPage extends BasePage {
     async getCurrentEmail() {
         await expect(this.emailValue).toBeVisible();
         return await this.emailValue.textContent();
+    }
+
+    async verifyEmailMatchesEnvironment() {
+        const displayedEmail = await this.getCurrentEmail();
+        const expectedEmail = process.env.USEREMAIL;
+        await expect(this.emailValue).toContainText(expectedEmail);
+        return displayedEmail === expectedEmail;
     }
 
     async getCurrentTimezone() {
