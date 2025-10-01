@@ -53,7 +53,7 @@ test.describe('Profile Settings Tests', () => {
     });
 
     test('@P2 TC_04_03: Cancel Display Name Edit', async ({ page }) => {
-        const originalName = 'Pravallika';
+        const originalName = 'Praval';
         
         await test.step('Navigate to Profile Settings', async () => {
             await profileSettingsPage.navigateToProfileSettings();
@@ -91,7 +91,7 @@ test.describe('Profile Settings Tests', () => {
     });
 
     test('@P2 TC_04_05: Cancel Timezone Edit', async ({ page }) => {
-        const originalTimezone = 'No timezone set';
+        const originalTimezone = 'UTC+13:00 Enderbury';
         
         await test.step('Navigate to Profile Settings', async () => {
             await profileSettingsPage.navigateToProfileSettings();
