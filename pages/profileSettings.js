@@ -8,7 +8,7 @@ class ProfileSettingsPage extends BasePage {
         
         // Navigation elements
         this.backToSettingsButton = page.getByText('Back to Settings');
-        this.settingsTitle = page.getByText('Settings');
+        this.settingsTitle = page.getByRole('heading', { name: 'Settings' });
         
         // Display name section
         this.displayNameSection = page.locator('[data-testid="display-name-section"]').or(
