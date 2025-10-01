@@ -3,9 +3,7 @@
     "displayName": "Pravilika",
     "dashboardChatbotTitle": "Inbox",
     "profileSettings": {
-        "defaultDisplayName": "Praval",
-        "defaultEmail": "pravallika2330@gmail.com",
-        "defaultTimezone": "UTC+13:00 Enderbury",
+        "note": "Values are now dynamically retrieved from the page - no hardcoded defaults needed",
         "testDisplayNames": [
             "TestUser_001",
             "UpdatedUser_002",

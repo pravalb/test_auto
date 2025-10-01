@@ -10,13 +10,13 @@ class ProfileSettingsPage extends BasePage {
         this.backToSettingsButton = page.getByText('Back to Settings');
         this.settingsTitle = page.getByRole('heading', { name: 'Settings' });
         
-        // Display name section
+        // Display name section - Generic structural selectors
         this.displayNameSection = page.locator('[data-testid="display-name-section"]').or(
             page.locator('text=Display name').locator('xpath=..')
         );
-        this.displayNameValue = page.locator('p.flex-1.text-sm.text-foreground').filter({ hasText: 'Praval' });
-        this.displayNameEditButton = this.displayNameSection.getByRole('button').or(
-            page.locator('svg[data-testid="edit-icon"]').first()
+        this.displayNameValue = page.locator('text=Display name').locator('xpath=..').locator('p.flex-1.text-sm.text-foreground');
+        this.displayNameEditButton = page.locator('text=Display name').locator('xpath=..').getByRole('button').or(
+            page.locator('text=Display name').locator('xpath=..').locator('svg')
         );
         this.displayNameInput = page.getByLabel('Display name').or(
             page.locator('input[placeholder*="display name" i]')
@@ -25,15 +25,15 @@ class ProfileSettingsPage extends BasePage {
         // Account Details section
         this.accountDetailsTitle = page.getByText('Account Details');
         
-        // Email section
+        // Email section - Generic structural selectors
         this.emailLabel = page.getByText('Email');
-        this.emailValue = page.getByText('pravallika2330@gmail.com');
+        this.emailValue = page.locator('text=Email').locator('xpath=..').locator('p').first();
         
-        // Timezone section
+        // Timezone section - Generic structural selectors
         this.timezoneLabel = page.getByText('Timezone');
-        this.timezoneValue = page.getByText('UTC+13:00 Enderbury');
-        this.timezoneEditButton = page.locator('svg[data-testid="edit-icon"]').last().or(
-            this.timezoneValue.locator('xpath=..').getByRole('button')
+        this.timezoneValue = page.locator('text=Timezone').locator('xpath=..').locator('p').first();
+        this.timezoneEditButton = page.locator('text=Timezone').locator('xpath=..').getByRole('button').or(
+            page.locator('text=Timezone').locator('xpath=..').locator('svg')
         );
         this.timezoneDropdown = page.getByRole('combobox', { name: 'Timezone' }).or(
             page.locator('select[name*="timezone" i]')
@@ -71,12 +71,14 @@ class ProfileSettingsPage extends BasePage {
 
     async getCurrentDisplayName() {
         await expect(this.displayNameValue).toBeVisible();
-        return await this.displayNameValue.textContent();
+        const text = await this.displayNameValue.textContent();
+        return text?.trim() || '';
     }
 
     async getCurrentEmail() {
         await expect(this.emailValue).toBeVisible();
-        return await this.emailValue.textContent();
+        const text = await this.emailValue.textContent();
+        return text?.trim() || '';
     }
 
     async verifyEmailMatchesEnvironment() {
@@ -88,7 +90,8 @@ class ProfileSettingsPage extends BasePage {
 
     async getCurrentTimezone() {
         await expect(this.timezoneValue).toBeVisible();
-        return await this.timezoneValue.textContent();
+        const text = await this.timezoneValue.textContent();
+        return text?.trim() || '';
     }
 
     async editDisplayName(newDisplayName) {

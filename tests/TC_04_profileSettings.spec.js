@@ -53,18 +53,20 @@ test.describe('Profile Settings Tests', () => {
     });
 
     test('@P2 TC_04_03: Cancel Display Name Edit', async ({ page }) => {
-        const originalName = 'Praval';
         
         await test.step('Navigate to Profile Settings', async () => {
             await profileSettingsPage.navigateToProfileSettings();
         });
 
-        await test.step('Start editing display name and cancel', async () => {
+        await test.step('Get original name and cancel edit', async () => {
+            const originalName = await profileSettingsPage.getCurrentDisplayName();
+            expect(originalName).toBeTruthy(); // Verify we got a name
+            
             await profileSettingsPage.cancelDisplayNameEdit();
-        });
-
-        await test.step('Verify display name remains unchanged', async () => {
-            await profileSettingsPage.verifyDisplayNameUpdated(originalName);
+            
+            // Verify name unchanged after cancel
+            const nameAfterCancel = await profileSettingsPage.getCurrentDisplayName();
+            expect(nameAfterCancel).toBe(originalName);
         });
     });
 
@@ -91,18 +93,20 @@ test.describe('Profile Settings Tests', () => {
     });
 
     test('@P2 TC_04_05: Cancel Timezone Edit', async ({ page }) => {
-        const originalTimezone = 'UTC+13:00 Enderbury';
         
         await test.step('Navigate to Profile Settings', async () => {
             await profileSettingsPage.navigateToProfileSettings();
         });
 
-        await test.step('Start editing timezone and cancel', async () => {
+        await test.step('Get original timezone and cancel edit', async () => {
+            const originalTimezone = await profileSettingsPage.getCurrentTimezone();
+            expect(originalTimezone).toBeTruthy(); // Verify we got a timezone
+            
             await profileSettingsPage.cancelTimezoneEdit();
-        });
-
-        await test.step('Verify timezone remains unchanged', async () => {
-            await profileSettingsPage.verifyTimezoneUpdated(originalTimezone);
+            
+            // Verify timezone unchanged after cancel
+            const timezoneAfterCancel = await profileSettingsPage.getCurrentTimezone();
+            expect(timezoneAfterCancel).toBe(originalTimezone);
         });
     });
 
