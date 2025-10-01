@@ -10,7 +10,7 @@ class LoginPage extends BasePage {
         this.password = page.getByLabel('Password');
         this.signInButton = page.getByRole('button', {name: 'Sign in'});
         this.backToAppButton = page.getByText('Back to application');
-        this.verifyChatbotDashboardtext = page.getByText('Inbox');
+        this.verifyChatbotDashboardtext = page.locator('div.font-semibold.leading-none.tracking-tight').getByText('Inbox');
     }
 
     async openApp() {
