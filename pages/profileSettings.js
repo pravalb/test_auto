@@ -159,11 +159,18 @@ class ProfileSettingsPage extends BasePage {
     }
 
     async attemptInvalidDisplayName(invalidName) {
+        // Display name validation rules: minimum 2 characters, maximum 30 characters
         await this.displayNameEditButton.click();
         await expect(this.displayNameInput).toBeVisible();
         await this.displayNameInput.clear();
         await this.displayNameInput.fill(invalidName);
         await this.saveButton.click();
+    }
+
+    async validateDisplayNameLength(displayName) {
+        // Validate display name meets requirements: 2-30 characters
+        const length = displayName.trim().length;
+        return length >= 2 && length <= 30;
     }
 }
 

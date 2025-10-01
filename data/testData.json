@@ -21,13 +21,18 @@
             "",
             "   ",
             "a",
+            "ThisIsAVeryLongDisplayNameThatExceedsTheMaximumAllowedCharacterLimit"
+        ],
+        "validDisplayNames": [
             "ab",
-            "ThisIsAVeryLongDisplayNameThatExceedsTheMaximumAllowedCharacterLimitForDisplayNames"
+            "TestUser123",
+            "User_2024",
+            "ProfileTest30CharactersLong"
         ],
         "validationMessages": {
             "displayNameRequired": "Display name is required",
-            "displayNameTooShort": "Display name must be at least 3 characters",
-            "displayNameTooLong": "Display name must be less than 50 characters",
+            "displayNameTooShort": "Display name must be at least 2 characters",
+            "displayNameTooLong": "Display name must be less than 30 characters",
             "updateSuccess": "Profile updated successfully",
             "updateError": "Failed to update profile"
         }

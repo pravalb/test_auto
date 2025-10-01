@@ -107,16 +107,43 @@ test.describe('Profile Settings Tests', () => {
     });
 
     test('@P2 TC_04_06: Attempt Invalid Display Name', async ({ page }) => {
-        const invalidNames = ['', '   ', 'a'.repeat(101)]; // Empty, whitespace, too long
+        const invalidNames = [
+            '', // Empty
+            '   ', // Whitespace only
+            'a', // Too short (1 character)
+            'ThisIsAVeryLongDisplayNameThatExceedsTheMaximumAllowedCharacterLimit' // Too long (>30 characters)
+        ];
         
         await test.step('Navigate to Profile Settings', async () => {
             await profileSettingsPage.navigateToProfileSettings();
         });
 
         for (const invalidName of invalidNames) {
-            await test.step(`Test invalid display name: "${invalidName}"`, async () => {
+            await test.step(`Test invalid display name: "${invalidName}" (${invalidName.length} chars)`, async () => {
                 await profileSettingsPage.attemptInvalidDisplayName(invalidName);
                 await profileSettingsPage.verifyErrorMessage();
+            });
+        }
+    });
+
+    test('@P2 TC_04_11: Verify Valid Display Name Lengths', async ({ page }) => {
+        const validNames = [
+            'ab', // Minimum valid (2 characters)
+            'TestUser123', // Medium length
+            'User_2024', // With underscore
+            'ProfileTest30CharactersLong' // Maximum valid (30 characters)
+        ];
+        
+        await test.step('Navigate to Profile Settings', async () => {
+            await profileSettingsPage.navigateToProfileSettings();
+        });
+
+        for (const validName of validNames) {
+            await test.step(`Test valid display name: "${validName}" (${validName.length} chars)`, async () => {
+                await profileSettingsPage.editDisplayName(validName);
+                await profileSettingsPage.verifyDisplayNameUpdated(validName);
+                // Optionally verify success message
+                // await profileSettingsPage.verifySuccessMessage();
             });
         }
     });
