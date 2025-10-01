@@ -14,7 +14,7 @@ class ProfileSettingsPage extends BasePage {
         this.displayNameSection = page.locator('[data-testid="display-name-section"]').or(
             page.locator('text=Display name').locator('xpath=..')
         );
-        this.displayNameValue = page.getByText('Praval');
+        this.displayNameValue = page.locator('p.flex-1.text-sm.text-foreground').filter({ hasText: 'Praval' });
         this.displayNameEditButton = this.displayNameSection.getByRole('button').or(
             page.locator('svg[data-testid="edit-icon"]').first()
         );
