@@ -14,7 +14,7 @@ class ProfileSettingsPage extends BasePage {
         this.displayNameSection = page.locator('[data-testid="display-name-section"]').or(
             page.locator('text=Display name').locator('xpath=..')
         );
-        this.displayNameValue = page.getByText('Basudevi024');
+        this.displayNameValue = page.getByText('Pravallika');
         this.displayNameEditButton = this.displayNameSection.getByRole('button').or(
             page.locator('svg[data-testid="edit-icon"]').first()
         );
@@ -27,13 +27,15 @@ class ProfileSettingsPage extends BasePage {
         
         // Email section
         this.emailLabel = page.getByText('Email');
-        this.emailValue = page.locator('[data-testid="email-value"]').or(
-            page.locator('text=Email').locator('xpath=..').locator('text=@')
+        this.emailValue = page.locator('text=pravallika2331@gmail.com').or(
+            page.locator('[data-testid="email-value"]').or(
+                page.locator('text=Email').locator('xpath=..').locator('text=@')
+            )
         );
         
         // Timezone section
         this.timezoneLabel = page.getByText('Timezone');
-        this.timezoneValue = page.getByText('UTC-07:00 Hermosillo');
+        this.timezoneValue = page.getByText('No timezone set');
         this.timezoneEditButton = page.locator('svg[data-testid="edit-icon"]').last().or(
             this.timezoneValue.locator('xpath=..').getByRole('button')
         );
