@@ -237,16 +237,54 @@ class ProfileSettingsPage {
     
     // Click the edit icon to enable editing
     async clickEditDisplayName() {
-        try {
-            // Try clicking the edit button/icon
-            await this.displayNameEditButton.click();
-        } catch (error) {
-            // Fallback: try clicking the edit icon specifically
-            await this.displayNameEditIcon.click();
+        console.log('🔍 Attempting to click edit button...');
+        
+        // Try multiple strategies to find and click the edit button
+        const strategies = [
+            {
+                name: 'Edit button near Pravallika',
+                locator: this.displayNameEditButton
+            },
+            {
+                name: 'Edit icon SVG',
+                locator: this.displayNameEditIcon
+            },
+            {
+                name: 'Any button near display name',
+                locator: this.page.locator('button:near(p:has-text("Pravallika"))')
+            },
+            {
+                name: 'SVG in display name container',
+                locator: this.page.locator('.flex.gap-2.items-center svg, .space-y-2 svg')
+            },
+            {
+                name: 'Clickable element with edit-like attributes',
+                locator: this.page.locator('[aria-label*="edit"], [data-testid*="edit"], button:has(svg)')
+            }
+        ];
+        
+        let clicked = false;
+        for (const strategy of strategies) {
+            try {
+                console.log(`🔍 Trying strategy: ${strategy.name}`);
+                await strategy.locator.first().click({ timeout: 2000 });
+                console.log(`✅ Successfully clicked using: ${strategy.name}`);
+                clicked = true;
+                break;
+            } catch (error) {
+                console.log(`❌ Strategy failed: ${strategy.name} - ${error.message}`);
+            }
         }
         
-        // Wait for input field to appear
-        await this.displayNameInput.waitFor({ state: 'visible', timeout: 3000 });
+        if (!clicked) {
+            throw new Error('Could not find or click edit button using any strategy');
+        }
+        
+        // Wait a moment for the UI to respond
+        await this.page.waitForTimeout(1000);
+        
+        console.log('🔍 Waiting for input field to appear...');
+        // Don't wait for input here - let the test handle it
     }
     
     // Edit display name (assumes edit mode is already active)

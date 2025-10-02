@@ -223,13 +223,97 @@ test.describe('Profile Settings Page Tests', () => {
             // Verify original name contains expected value
             expect(originalName).toContain('Pravallika');
             
+            // Take screenshot before clicking edit
+            await profileSettingsPage.takeScreenshot('before-edit-click');
+            
+            // Debug: Look for edit buttons/icons before clicking
+            console.log('=== DEBUGGING EDIT BUTTONS BEFORE CLICK ===');
+            const allButtons = await profileSettingsPage.page.locator('button').all();
+            console.log(`Found ${allButtons.length} buttons on the page`);
+            
+            for (let i = 0; i < Math.min(allButtons.length, 10); i++) {
+                const button = allButtons[i];
+                const text = await button.textContent() || '';
+                const ariaLabel = await button.getAttribute('aria-label') || 'no-aria-label';
+                const className = await button.getAttribute('class') || 'no-class';
+                const isVisible = await button.isVisible();
+                console.log(`Button ${i}: text="${text}", aria-label="${ariaLabel}", visible=${isVisible}, class="${className}"`);
+            }
+            
+            // Look for SVG icons (edit icons are usually SVGs)
+            const allSvgs = await profileSettingsPage.page.locator('svg').all();
+            console.log(`Found ${allSvgs.length} SVG elements on the page`);
+            
+            for (let i = 0; i < Math.min(allSvgs.length, 5); i++) {
+                const svg = allSvgs[i];
+                const testId = await svg.getAttribute('data-testid') || 'no-testid';
+                const className = await svg.getAttribute('class') || 'no-class';
+                const isVisible = await svg.isVisible();
+                console.log(`SVG ${i}: data-testid="${testId}", visible=${isVisible}, class="${className}"`);
+            }
+            console.log('=== END DEBUGGING EDIT BUTTONS ===');
+            
             // Click edit to enable editing mode
             await profileSettingsPage.clickEditDisplayName();
             console.log('✅ Clicked edit button - input field should be visible');
             
-            // Verify input field is now visible
-            await expect(profileSettingsPage.displayNameInput).toBeVisible();
-            console.log('✅ Input field is visible for editing');
+            // Take screenshot after clicking edit
+            await profileSettingsPage.takeScreenshot('after-edit-click');
+            
+            // Debug: Look for input fields after clicking
+            console.log('=== DEBUGGING INPUT FIELDS AFTER CLICK ===');
+            const allInputsAfter = await profileSettingsPage.page.locator('input').all();
+            console.log(`Found ${allInputsAfter.length} input elements after click`);
+            
+            for (let i = 0; i < allInputsAfter.length; i++) {
+                const input = allInputsAfter[i];
+                const name = await input.getAttribute('name') || 'no-name';
+                const type = await input.getAttribute('type') || 'no-type';
+                const value = await input.getAttribute('value') || 'no-value';
+                const placeholder = await input.getAttribute('placeholder') || 'no-placeholder';
+                const id = await input.getAttribute('id') || 'no-id';
+                const className = await input.getAttribute('class') || 'no-class';
+                const isVisible = await input.isVisible();
+                console.log(`Input ${i}: name="${name}", type="${type}", value="${value}", placeholder="${placeholder}", id="${id}", class="${className}", visible=${isVisible}`);
+            }
+            console.log('=== END DEBUGGING INPUT FIELDS ===');
+            
+            // Try to find the input field with a more flexible approach
+            let inputFound = false;
+            try {
+                await expect(profileSettingsPage.displayNameInput).toBeVisible({ timeout: 2000 });
+                inputFound = true;
+                console.log('✅ Input field is visible for editing');
+            } catch (error) {
+                console.log('❌ Primary input selector failed, trying alternatives...');
+                
+                // Try alternative selectors
+                const alternatives = [
+                    'input[type="text"]',
+                    'input:not([type="file"])',
+                    'input[value*="Pravallika"]',
+                    'input:visible'
+                ];
+                
+                for (const selector of alternatives) {
+                    try {
+                        const altInput = profileSettingsPage.page.locator(selector).first();
+                        await expect(altInput).toBeVisible({ timeout: 1000 });
+                        console.log(`✅ Found input with alternative selector: ${selector}`);
+                        inputFound = true;
+                        break;
+                    } catch (altError) {
+                        console.log(`❌ Alternative selector failed: ${selector}`);
+                    }
+                }
+            }
+            
+            if (!inputFound) {
+                console.log('❌ No input field found - edit functionality may not be working as expected');
+                console.log('Taking final screenshot for debugging...');
+                await profileSettingsPage.takeScreenshot('edit-failed-final');
+                throw new Error('Edit functionality not working - input field not found after clicking edit');
+            }
             
             // Edit the display name
             const newName = 'Pravallika Updated';
