@@ -214,6 +214,47 @@ test.describe('Profile Settings Page Tests', () => {
                 await expect(profileSettingsPage.page).toHaveURL(/.*settings$/);
             }
         });
+
+        test('TC_04_004: Should be able to edit display name', async () => {
+            // Get current display name
+            const originalName = await profileSettingsPage.getCurrentDisplayName();
+            console.log(`📝 Original display name: "${originalName}"`);
+            
+            // Verify original name contains expected value
+            expect(originalName).toContain('Pravallika');
+            
+            // Click edit to enable editing mode
+            await profileSettingsPage.clickEditDisplayName();
+            console.log('✅ Clicked edit button - input field should be visible');
+            
+            // Verify input field is now visible
+            await expect(profileSettingsPage.displayNameInput).toBeVisible();
+            console.log('✅ Input field is visible for editing');
+            
+            // Edit the display name
+            const newName = 'Pravallika Updated';
+            await profileSettingsPage.editDisplayName(newName);
+            console.log(`📝 Changed display name to: "${newName}"`);
+            
+            // Save the changes
+            await profileSettingsPage.saveDisplayName();
+            console.log('✅ Clicked save button');
+            
+            // Wait for save to complete and verify the change
+            await profileSettingsPage.page.waitForTimeout(2000);
+            const updatedName = await profileSettingsPage.getCurrentDisplayName();
+            console.log(`📝 Updated display name: "${updatedName}"`);
+            
+            // Verify the name was updated
+            expect(updatedName).toContain('Updated');
+            
+            // Take screenshot of the updated name
+            await profileSettingsPage.takeScreenshot('display-name-updated');
+            
+            // Restore original name for cleanup
+            await profileSettingsPage.changeDisplayName(originalName.trim());
+            console.log('🔄 Restored original display name');
+        });
     });
 
     /**

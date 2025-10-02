@@ -63,18 +63,21 @@ class ProfileSettingsPage {
         this.modalCloseButton = page.locator('button[aria-label="Close"], .modal-close, [data-testid="close-modal"]');
         
         // Display Name Section Elements
-        this.displayNameLabel = page.locator('label:has-text("Display name"), text=Display name');
+        this.displayNameLabel = page.locator('text=Display name');
         
-        // Display name is a read-only <p> element, not an input
+        // Display name is a read-only text element initially
         this.displayNameText = page.locator('p.flex-1.text-sm.text-foreground');
         this.displayNameValue = page.locator('p:has-text("Pravallika")').first();
         
-        // Look for edit functionality near the display name
-        this.displayNameEditButton = page.locator('button:near(p:has-text("Pravallika")):has-text("Edit"), [data-testid="edit-display-name"], button[aria-label*="edit"]').first();
-        this.displayNameContainer = page.locator('.space-y-2:has(p:has-text("Pravallika"))');
+        // Edit functionality - the pen/pencil icon next to display name
+        this.displayNameEditIcon = page.locator('svg[data-testid="edit-icon"], button:has(svg):near(p:has-text("Pravallika")), [aria-label*="edit"]:near(p:has-text("Pravallika"))').first();
+        this.displayNameEditButton = page.locator('button:near(p:has-text("Pravallika"))').first();
         
-        // These might appear when editing is activated
-        this.displayNameInput = page.locator('input[name="displayName"], input[placeholder*="name"], #displayName').first();
+        // Container for the entire display name section
+        this.displayNameContainer = page.locator('.space-y-2:has(p:has-text("Pravallika")), .flex.flex-col.gap-4:has(p:has-text("Pravallika"))').first();
+        
+        // Elements that appear when editing is activated
+        this.displayNameInput = page.locator('input[name="displayName"], input[placeholder*="name"], input[value*="Pravallika"], input[type="text"]').first();
         this.displayNameSaveButton = page.locator('button:has-text("Save"), [data-testid="save-display-name"]').first();
         this.displayNameCancelButton = page.locator('button:has-text("Cancel"), [data-testid="cancel-display-name"]').first();
         
@@ -222,15 +225,41 @@ class ProfileSettingsPage {
      * Display Name Methods
      */
     
-    // Get current display name
+    // Get current display name from the read-only text
     async getCurrentDisplayName() {
-        return await this.displayNameInput.inputValue();
+        try {
+            return await this.displayNameText.textContent();
+        } catch (error) {
+            // Fallback to alternative selector
+            return await this.displayNameValue.textContent();
+        }
     }
     
-    // Edit display name
+    // Click the edit icon to enable editing
+    async clickEditDisplayName() {
+        try {
+            // Try clicking the edit button/icon
+            await this.displayNameEditButton.click();
+        } catch (error) {
+            // Fallback: try clicking the edit icon specifically
+            await this.displayNameEditIcon.click();
+        }
+        
+        // Wait for input field to appear
+        await this.displayNameInput.waitFor({ state: 'visible', timeout: 3000 });
+    }
+    
+    // Edit display name (assumes edit mode is already active)
     async editDisplayName(newName) {
         await this.displayNameInput.clear();
         await this.displayNameInput.fill(newName);
+    }
+    
+    // Complete edit workflow: click edit, change name, save
+    async changeDisplayName(newName) {
+        await this.clickEditDisplayName();
+        await this.editDisplayName(newName);
+        await this.saveDisplayName();
     }
     
     // Save display name changes
