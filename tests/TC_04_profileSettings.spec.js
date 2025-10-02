@@ -15,10 +15,9 @@
 
 const { test, expect } = require('@playwright/test');
 const ProfileSettingsPage = require('../pages/ProfileSettingsPage');
-const TestHelpers = require('../pages/TestHelpers');
 
 // Load test data from JSON file
-const testData = TestHelpers.loadTestData();
+const testData = ProfileSettingsPage.loadTestData();
 const profileTestData = testData.profileSettings || {
     validDisplayNames: [
         'John Doe',
@@ -297,7 +296,7 @@ test.describe('Profile Settings Page Tests', () => {
                     
                     // Check for specific validation messages
                     const validationMessage = await profileSettingsPage.getValidationMessage();
-                    const expectedError = TestHelpers.getDisplayNameValidationError(invalidName);
+                    const expectedError = ProfileSettingsPage.getDisplayNameValidationError(invalidName);
                     
                     if (expectedError) {
                         expect(validationMessage).toContain(expectedError);
@@ -468,19 +467,19 @@ test.describe('Profile Settings Page Tests', () => {
 
         test('TC_04_025: Should validate form before submission', async () => {
             // Test client-side validation with new validation rules
-            expect(profileSettingsPage.isValidDisplayName('Valid Name')).toBe(true);
-            expect(profileSettingsPage.isValidDisplayName('AB')).toBe(true); // Minimum valid
-            expect(profileSettingsPage.isValidDisplayName('A'.repeat(29))).toBe(true); // Maximum valid
+            expect(ProfileSettingsPage.isValidDisplayName('Valid Name')).toBe(true);
+            expect(ProfileSettingsPage.isValidDisplayName('AB')).toBe(true); // Minimum valid
+            expect(ProfileSettingsPage.isValidDisplayName('A'.repeat(29))).toBe(true); // Maximum valid
             
-            expect(profileSettingsPage.isValidDisplayName('')).toBe(false);
-            expect(profileSettingsPage.isValidDisplayName('A')).toBe(false); // Too short
-            expect(profileSettingsPage.isValidDisplayName('A'.repeat(30))).toBe(false); // Too long
+            expect(ProfileSettingsPage.isValidDisplayName('')).toBe(false);
+            expect(ProfileSettingsPage.isValidDisplayName('A')).toBe(false); // Too short
+            expect(ProfileSettingsPage.isValidDisplayName('A'.repeat(30))).toBe(false); // Too long
             
             // Test validation error messages
-            expect(profileSettingsPage.getDisplayNameValidationError('')).toBe(profileTestData.validationMessages.displayNameRequired);
-            expect(profileSettingsPage.getDisplayNameValidationError('A')).toBe(profileTestData.validationMessages.displayNameTooShort);
-            expect(profileSettingsPage.getDisplayNameValidationError('A'.repeat(30))).toBe(profileTestData.validationMessages.displayNameTooLong);
-            expect(profileSettingsPage.getDisplayNameValidationError('Valid Name')).toBe(null);
+            expect(ProfileSettingsPage.getDisplayNameValidationError('')).toBe(profileTestData.validationMessages.displayNameRequired);
+            expect(ProfileSettingsPage.getDisplayNameValidationError('A')).toBe(profileTestData.validationMessages.displayNameTooShort);
+            expect(ProfileSettingsPage.getDisplayNameValidationError('A'.repeat(30))).toBe(profileTestData.validationMessages.displayNameTooLong);
+            expect(ProfileSettingsPage.getDisplayNameValidationError('Valid Name')).toBe(null);
         });
     });
 
@@ -536,7 +535,7 @@ test.describe('Profile Settings Page Tests', () => {
             await profileSettingsPage.takeScreenshot('long-content');
             
             // Should be valid
-            expect(profileSettingsPage.isValidDisplayName(longName)).toBe(true);
+            expect(ProfileSettingsPage.isValidDisplayName(longName)).toBe(true);
         });
     });
 
