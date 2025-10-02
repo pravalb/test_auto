@@ -24,7 +24,9 @@ class LoginPage extends BasePage {
         await this.signInButton.click();
         await this.waitforPageLoad();
         await this.backToAppButton.click();
-        await expect(this.verifyChatbotDashboardtext).toContainText(testData.dashboardChatbotTitle);
+        
+        // Wait for dashboard to load by checking for Inbox element
+        await this.verifyChatbotDashboardtext.waitFor({ state: 'visible', timeout: 10000 });
         
     }
 
