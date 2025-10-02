@@ -104,11 +104,12 @@ test.describe('Profile Settings Page Tests', () => {
             // Verify page loads correctly
             await expect(profileSettingsPage.settingsHeader).toBeVisible();
             
-            // Debug: Log all input elements on the page
-            const allInputs = await profileSettingsPage.page.locator('input').all();
-            console.log(`\n=== DEBUGGING INPUT ELEMENTS ===`);
-            console.log(`Found ${allInputs.length} input elements on the page`);
+            // Debug: Log all form elements on the page
+            console.log(`\n=== DEBUGGING ALL FORM ELEMENTS ===`);
             
+            // Check input elements
+            const allInputs = await profileSettingsPage.page.locator('input').all();
+            console.log(`Found ${allInputs.length} input elements on the page`);
             for (let i = 0; i < allInputs.length; i++) {
                 const input = allInputs[i];
                 const name = await input.getAttribute('name') || 'no-name';
@@ -119,6 +120,45 @@ test.describe('Profile Settings Page Tests', () => {
                 const className = await input.getAttribute('class') || 'no-class';
                 console.log(`Input ${i}: name="${name}", type="${type}", value="${value}", placeholder="${placeholder}", id="${id}", class="${className}"`);
             }
+            
+            // Check textarea elements
+            const allTextareas = await profileSettingsPage.page.locator('textarea').all();
+            console.log(`Found ${allTextareas.length} textarea elements on the page`);
+            for (let i = 0; i < allTextareas.length; i++) {
+                const textarea = allTextareas[i];
+                const name = await textarea.getAttribute('name') || 'no-name';
+                const value = await textarea.getAttribute('value') || 'no-value';
+                const textContent = await textarea.textContent() || 'no-text';
+                const placeholder = await textarea.getAttribute('placeholder') || 'no-placeholder';
+                const id = await textarea.getAttribute('id') || 'no-id';
+                const className = await textarea.getAttribute('class') || 'no-class';
+                console.log(`Textarea ${i}: name="${name}", value="${value}", text="${textContent}", placeholder="${placeholder}", id="${id}", class="${className}"`);
+            }
+            
+            // Check contenteditable elements
+            const allContentEditable = await profileSettingsPage.page.locator('[contenteditable]').all();
+            console.log(`Found ${allContentEditable.length} contenteditable elements on the page`);
+            for (let i = 0; i < allContentEditable.length; i++) {
+                const element = allContentEditable[i];
+                const textContent = await element.textContent() || 'no-text';
+                const id = await element.getAttribute('id') || 'no-id';
+                const className = await element.getAttribute('class') || 'no-class';
+                const tagName = await element.evaluate(el => el.tagName.toLowerCase());
+                console.log(`ContentEditable ${i}: tag="${tagName}", text="${textContent}", id="${id}", class="${className}"`);
+            }
+            
+            // Search for any element containing "Pravallika"
+            const elementsWithPravallika = await profileSettingsPage.page.locator('*:has-text("Pravallika")').all();
+            console.log(`Found ${elementsWithPravallika.length} elements containing "Pravallika"`);
+            for (let i = 0; i < elementsWithPravallika.length; i++) {
+                const element = elementsWithPravallika[i];
+                const textContent = await element.textContent() || 'no-text';
+                const id = await element.getAttribute('id') || 'no-id';
+                const className = await element.getAttribute('class') || 'no-class';
+                const tagName = await element.evaluate(el => el.tagName.toLowerCase());
+                console.log(`Pravallika Element ${i}: tag="${tagName}", text="${textContent.substring(0, 100)}", id="${id}", class="${className}"`);
+            }
+            
             console.log(`=== END DEBUGGING ===\n`);
             
             // Take screenshot for verification BEFORE trying to find display name input
