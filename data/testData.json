@@ -1,5 +1,38 @@
 {
     "loginPageTitle": "Login - MyApp",
     "displayName": "Pravilika",
-    "dashboardChatbotTitle": "Inbox"
+    "dashboardChatbotTitle": "Inbox",
+    "profileSettings": {
+        "note": "Values are now dynamically retrieved from the page - no hardcoded defaults needed",
+        "testDisplayNames": [
+            "TestUser_001",
+            "UpdatedUser_002",
+            "ProfileTest_003"
+        ],
+        "testTimezones": [
+            "UTC-05:00 Eastern Time",
+            "UTC+00:00 Greenwich Mean Time",
+            "UTC+05:30 India Standard Time",
+            "UTC-08:00 Pacific Time"
+        ],
+        "invalidDisplayNames": [
+            "",
+            "   ",
+            "a",
+            "ThisIsAVeryLongDisplayNameThatExceedsTheMaximumAllowedCharacterLimit"
+        ],
+        "validDisplayNames": [
+            "ab",
+            "TestUser123",
+            "User_2024",
+            "ProfileTest30CharactersLong"
+        ],
+        "validationMessages": {
+            "displayNameRequired": "Display name is required",
+            "displayNameTooShort": "Display name must be at least 2 characters",
+            "displayNameTooLong": "Display name must be less than 30 characters",
+            "updateSuccess": "Profile updated successfully",
+            "updateError": "Failed to update profile"
+        }
+    }
 }
