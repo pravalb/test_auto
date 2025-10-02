@@ -78,8 +78,8 @@ class ProfileSettingsPage {
         
         // Elements that appear when editing is activated
         this.displayNameInput = page.locator('input[name="displayName"], input[placeholder*="name"], input[value*="Pravallika"], input[type="text"]').first();
-        this.displayNameSaveButton = page.locator('button:has-text("Save"), [data-testid="save-display-name"]').first();
-        this.displayNameCancelButton = page.locator('button:has-text("Cancel"), [data-testid="cancel-display-name"]').first();
+        this.displayNameSaveButton = page.locator('button[data-tour-action="name-save"]');
+        this.displayNameCancelButton = page.locator('button[data-tour-action="name-cancel"]');
         
         // Account Details Section Elements
         this.accountDetailsHeader = page.locator('h2:has-text("Account Details"), h3:has-text("Account Details")');
@@ -264,7 +264,57 @@ class ProfileSettingsPage {
     
     // Save display name changes
     async saveDisplayName() {
+        console.log('🔍 Attempting to save display name...');
+        
+        // Check if save button exists
+        const saveButtonExists = await this.displayNameSaveButton.isVisible();
+        console.log(`Save button visible: ${saveButtonExists}`);
+        
+        if (!saveButtonExists) {
+            throw new Error('Save button not found');
+        }
+        
+        // Check if save button is enabled
+        const isEnabled = await this.displayNameSaveButton.isEnabled();
+        console.log(`Save button enabled: ${isEnabled}`);
+        
+        if (!isEnabled) {
+            console.log('⚠️ Save button is disabled, waiting for it to be enabled...');
+            
+            // Try to trigger validation by clicking in the input field or pressing a key
+            await this.displayNameInput.click();
+            await this.page.keyboard.press('End'); // Move cursor to end
+            await this.page.keyboard.press('Space'); // Add a space
+            await this.page.keyboard.press('Backspace'); // Remove the space
+            await this.page.waitForTimeout(500);
+            
+            // Check again if button is now enabled
+            const isEnabledAfter = await this.displayNameSaveButton.isEnabled();
+            console.log(`Save button enabled after input interaction: ${isEnabledAfter}`);
+            
+            if (!isEnabledAfter) {
+                // Wait up to 5 seconds for button to become enabled
+                try {
+                    await this.displayNameSaveButton.waitFor({ state: 'attached', timeout: 5000 });
+                    await this.page.waitForFunction(
+                        (selector) => {
+                            const button = document.querySelector(selector);
+                            return button && !button.disabled;
+                        },
+                        'button[data-tour-action="name-save"]',
+                        { timeout: 5000 }
+                    );
+                    console.log('✅ Save button is now enabled');
+                } catch (error) {
+                    console.log('❌ Save button remained disabled, attempting to click anyway...');
+                }
+            }
+        }
+        
+        // Click the save button
         await this.displayNameSaveButton.click();
+        console.log('✅ Clicked save button');
+        
         await this.page.waitForTimeout(1000); // Wait for save operation
     }
     
