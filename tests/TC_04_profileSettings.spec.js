@@ -81,8 +81,11 @@ test.describe('Profile Settings Page Tests', () => {
         await page.getByLabel('Password').fill(process.env.PASSWORD || 'HilalPassword@123');
         await page.getByRole('button', {name: 'Sign in'}).click();
         
-        // Wait for page load and click "Back to application"
+        // Wait for intermediate page to load first
+        await page.waitForURL('**/hilal-chatbot/', { timeout: 15000 });
         await page.waitForLoadState('networkidle');
+        
+        // Click "Back to application" to navigate to dashboard
         await page.getByText('Back to application').click();
         
         // Wait for dashboard to load (look for "Inbox" text instead of URL)
