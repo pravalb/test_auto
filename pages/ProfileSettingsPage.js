@@ -487,8 +487,13 @@ class ProfileSettingsPage {
             // Submit login form
             await page.click('button[type="submit"], button:has-text("Login"), button:has-text("Sign In")');
             
-            // Wait for successful login (dashboard or main page)
-            await page.waitForURL('**/dashboard', { timeout: 15000 });
+            // Wait for successful login (look for dashboard elements instead of URL)
+            try {
+                await page.waitForURL('**/dashboard*', { timeout: 15000 });
+            } catch (error) {
+                // If URL wait fails, try waiting for dashboard elements
+                await page.getByText('Inbox').first().waitFor({ state: 'visible', timeout: 15000 });
+            }
             
             return true;
         } catch (error) {
@@ -705,4 +710,3 @@ class ProfileSettingsPage {
 }
 
 module.exports = ProfileSettingsPage;
-
