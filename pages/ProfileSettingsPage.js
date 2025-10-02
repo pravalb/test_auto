@@ -84,6 +84,14 @@ class ProfileSettingsPage {
         this.errorMessage = page.locator('.error-message, .alert-error, [data-testid="error-message"]');
         this.saveButton = page.locator('button:has-text("Save"), [data-testid="save-settings"]');
         
+        // Validation Message Elements
+        this.displayNameRequiredMessage = page.locator('text="Display name is required", [data-testid="display-name-required"]');
+        this.displayNameTooShortMessage = page.locator('text="Display name must be at least 2 characters", [data-testid="display-name-too-short"]');
+        this.displayNameTooLongMessage = page.locator('text="Display name must be less than 30 characters", [data-testid="display-name-too-long"]');
+        this.updateSuccessMessage = page.locator('text="Profile updated successfully", [data-testid="update-success"]');
+        this.updateErrorMessage = page.locator('text="Failed to update profile", [data-testid="update-error"]');
+        this.validationMessage = page.locator('.validation-message, .field-error, [data-testid="validation-message"]');
+        
         // File Upload Elements
         this.fileInput = page.locator('input[type="file"]');
         this.uploadArea = page.locator('.upload-area, [data-testid="upload-area"]');
@@ -274,21 +282,27 @@ class ProfileSettingsPage {
     
     // Check if success message is displayed
     async isSuccessMessageVisible() {
-        return await this.successMessage.isVisible();
+        return await this.successMessage.isVisible() || await this.updateSuccessMessage.isVisible();
     }
     
     // Check if error message is displayed
     async isErrorMessageVisible() {
-        return await this.errorMessage.isVisible();
+        return await this.errorMessage.isVisible() || await this.updateErrorMessage.isVisible();
     }
     
     // Get success message text
     async getSuccessMessage() {
+        if (await this.updateSuccessMessage.isVisible()) {
+            return await this.updateSuccessMessage.textContent();
+        }
         return await this.successMessage.textContent();
     }
     
     // Get error message text
     async getErrorMessage() {
+        if (await this.updateErrorMessage.isVisible()) {
+            return await this.updateErrorMessage.textContent();
+        }
         return await this.errorMessage.textContent();
     }
     
@@ -301,14 +315,74 @@ class ProfileSettingsPage {
     async waitForLoadingComplete() {
         await this.loadingSpinner.waitFor({ state: 'hidden', timeout: 10000 });
     }
+    
+    // Check for specific validation messages
+    async isDisplayNameRequiredMessageVisible() {
+        return await this.displayNameRequiredMessage.isVisible();
+    }
+    
+    async isDisplayNameTooShortMessageVisible() {
+        return await this.displayNameTooShortMessage.isVisible();
+    }
+    
+    async isDisplayNameTooLongMessageVisible() {
+        return await this.displayNameTooLongMessage.isVisible();
+    }
+    
+    async getValidationMessage() {
+        if (await this.displayNameRequiredMessage.isVisible()) {
+            return await this.displayNameRequiredMessage.textContent();
+        }
+        if (await this.displayNameTooShortMessage.isVisible()) {
+            return await this.displayNameTooShortMessage.textContent();
+        }
+        if (await this.displayNameTooLongMessage.isVisible()) {
+            return await this.displayNameTooLongMessage.textContent();
+        }
+        if (await this.validationMessage.isVisible()) {
+            return await this.validationMessage.textContent();
+        }
+        return null;
+    }
+    
+    // Wait for validation message to appear
+    async waitForValidationMessage(timeout = 5000) {
+        try {
+            await this.validationMessage.waitFor({ state: 'visible', timeout });
+            return true;
+        } catch (error) {
+            return false;
+        }
+    }
 
     /**
      * Form Validation Methods
      */
     
-    // Validate display name format
+    // Validate display name format (2-30 characters)
     isValidDisplayName(name) {
-        return name && name.trim().length > 0 && name.length <= 50;
+        if (!name || typeof name !== 'string') {
+            return false;
+        }
+        const trimmedName = name.trim();
+        return trimmedName.length >= 2 && trimmedName.length < 30;
+    }
+    
+    // Get display name validation error message
+    getDisplayNameValidationError(name) {
+        if (!name || (typeof name === 'string' && name.trim().length === 0)) {
+            return "Display name is required";
+        }
+        if (typeof name === 'string') {
+            const trimmedName = name.trim();
+            if (trimmedName.length < 2) {
+                return "Display name must be at least 2 characters";
+            }
+            if (trimmedName.length >= 30) {
+                return "Display name must be less than 30 characters";
+            }
+        }
+        return null;
     }
     
     // Validate email format

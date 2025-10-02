@@ -12,10 +12,18 @@
     "invalidDisplayNames": [
       "",
       "   ",
-      "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+      "A",
+      "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
       null,
       undefined
     ],
+    "validationMessages": {
+      "displayNameRequired": "Display name is required",
+      "displayNameTooShort": "Display name must be at least 2 characters",
+      "displayNameTooLong": "Display name must be less than 30 characters",
+      "updateSuccess": "Profile updated successfully",
+      "updateError": "Failed to update profile"
+    },
     "timezones": [
       "UTC+00:00 Enderbury",
       "UTC+14:00 Kiritimati", 

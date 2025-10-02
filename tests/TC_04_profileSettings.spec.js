@@ -15,25 +15,35 @@
 
 const { test, expect } = require('@playwright/test');
 const ProfileSettingsPage = require('../pages/ProfileSettingsPage');
+const TestHelpers = require('../pages/TestHelpers');
 
-// Test data for various scenarios
-const testData = {
+// Load test data from JSON file
+const testData = TestHelpers.loadTestData();
+const profileTestData = testData.profileSettings || {
     validDisplayNames: [
         'John Doe',
         'Jane Smith',
         'Test User 123',
         'محمد علي', // Arabic name
         'José García', // Spanish name with accents
-        'A', // Single character
-        'Very Long Display Name That Is Still Valid' // Long but valid name
+        'AB', // Minimum valid length (2 characters)
+        'Very Long Display Name Valid' // Long but valid name (under 30 chars)
     ],
     invalidDisplayNames: [
         '', // Empty string
         '   ', // Only spaces
-        'A'.repeat(101), // Too long (over 100 characters)
+        'A', // Too short (1 character)
+        'A'.repeat(30), // Too long (30+ characters)
         null,
         undefined
     ],
+    validationMessages: {
+        displayNameRequired: "Display name is required",
+        displayNameTooShort: "Display name must be at least 2 characters",
+        displayNameTooLong: "Display name must be less than 30 characters",
+        updateSuccess: "Profile updated successfully",
+        updateError: "Failed to update profile"
+    },
     timezones: [
         'UTC+00:00 Enderbury',
         'UTC+14:00 Kiritimati',
@@ -218,13 +228,20 @@ test.describe('Profile Settings Page Tests', () => {
 
         test('TC_04_012: Should upload valid image file', async ({ page }) => {
             // This test would require actual image files in the data directory
-            test.skip(!testData.imageFiles.validJpeg, 'Test image file not available');
+            const imageFiles = profileTestData.imageFiles || {};
+            test.skip(!imageFiles.validJpeg, 'Test image file not available');
             
             await profileSettingsPage.clickUploadImage();
-            await profileSettingsPage.uploadImageFile(testData.imageFiles.validJpeg);
+            await profileSettingsPage.uploadImageFile(imageFiles.validJpeg);
             
             // Verify upload success
             await profileSettingsPage.takeScreenshot('image-uploaded');
+            
+            // Verify success message appears
+            if (await profileSettingsPage.isSuccessMessageVisible()) {
+                const successMessage = await profileSettingsPage.getSuccessMessage();
+                expect(successMessage).toContain(profileTestData.validationMessages.updateSuccess);
+            }
         });
     });
 
@@ -240,7 +257,7 @@ test.describe('Profile Settings Page Tests', () => {
         });
 
         test.describe('Valid Display Name Updates', () => {
-            testData.validDisplayNames.forEach((displayName, index) => {
+            profileTestData.validDisplayNames.forEach((displayName, index) => {
                 test(`TC_04_014_${index + 1}: Should update display name to "${displayName}"`, async () => {
                     // Store original name for cleanup
                     const originalName = await profileSettingsPage.getCurrentDisplayName();
@@ -253,6 +270,12 @@ test.describe('Profile Settings Page Tests', () => {
                     const updatedName = await profileSettingsPage.getCurrentDisplayName();
                     expect(updatedName).toBe(displayName);
                     
+                    // Verify success message appears
+                    if (await profileSettingsPage.isSuccessMessageVisible()) {
+                        const successMessage = await profileSettingsPage.getSuccessMessage();
+                        expect(successMessage).toContain(profileTestData.validationMessages.updateSuccess);
+                    }
+                    
                     // Cleanup: restore original name
                     await profileSettingsPage.editDisplayName(originalName);
                     await profileSettingsPage.saveDisplayName();
@@ -261,27 +284,37 @@ test.describe('Profile Settings Page Tests', () => {
         });
 
         test.describe('Invalid Display Name Validation', () => {
-            testData.invalidDisplayNames.forEach((invalidName, index) => {
+            profileTestData.invalidDisplayNames.forEach((invalidName, index) => {
                 test(`TC_04_015_${index + 1}: Should reject invalid display name "${invalidName}"`, async () => {
                     const originalName = await profileSettingsPage.getCurrentDisplayName();
                     
-                    try {
-                        await profileSettingsPage.editDisplayName(invalidName || '');
-                        await profileSettingsPage.saveDisplayName();
-                        
-                        // Should show error message or prevent saving
-                        if (await profileSettingsPage.isErrorMessageVisible()) {
-                            const errorMessage = await profileSettingsPage.getErrorMessage();
-                            expect(errorMessage).toBeTruthy();
-                        } else {
-                            // Name should not have changed
-                            const currentName = await profileSettingsPage.getCurrentDisplayName();
-                            expect(currentName).toBe(originalName);
-                        }
-                    } catch (error) {
-                        // Expected behavior for invalid input
-                        console.log(`Expected validation error for: ${invalidName}`);
+                    // Update display name with invalid value
+                    await profileSettingsPage.editDisplayName(invalidName || '');
+                    await profileSettingsPage.saveDisplayName();
+                    
+                    // Wait for validation message to appear
+                    await profileSettingsPage.waitForValidationMessage();
+                    
+                    // Check for specific validation messages
+                    const validationMessage = await profileSettingsPage.getValidationMessage();
+                    const expectedError = TestHelpers.getDisplayNameValidationError(invalidName);
+                    
+                    if (expectedError) {
+                        expect(validationMessage).toContain(expectedError);
                     }
+                    
+                    // Verify specific validation message types
+                    if (invalidName === '' || (typeof invalidName === 'string' && invalidName.trim() === '')) {
+                        expect(await profileSettingsPage.isDisplayNameRequiredMessageVisible()).toBe(true);
+                    } else if (typeof invalidName === 'string' && invalidName.trim().length === 1) {
+                        expect(await profileSettingsPage.isDisplayNameTooShortMessageVisible()).toBe(true);
+                    } else if (typeof invalidName === 'string' && invalidName.trim().length >= 30) {
+                        expect(await profileSettingsPage.isDisplayNameTooLongMessageVisible()).toBe(true);
+                    }
+                    
+                    // Verify name was not changed
+                    const currentName = await profileSettingsPage.getCurrentDisplayName();
+                    expect(currentName).toBe(originalName);
                 });
             });
         });
@@ -299,6 +332,41 @@ test.describe('Profile Settings Page Tests', () => {
             const currentName = await profileSettingsPage.getCurrentDisplayName();
             expect(currentName).toBe(originalName);
         });
+
+        test('TC_04_017: Should display correct validation messages for each error type', async () => {
+            const originalName = await profileSettingsPage.getCurrentDisplayName();
+            
+            // Test empty display name
+            await profileSettingsPage.editDisplayName('');
+            await profileSettingsPage.saveDisplayName();
+            await profileSettingsPage.waitForValidationMessage();
+            
+            let validationMessage = await profileSettingsPage.getValidationMessage();
+            expect(validationMessage).toBe(profileTestData.validationMessages.displayNameRequired);
+            expect(await profileSettingsPage.isDisplayNameRequiredMessageVisible()).toBe(true);
+            
+            // Test too short display name (1 character)
+            await profileSettingsPage.editDisplayName('A');
+            await profileSettingsPage.saveDisplayName();
+            await profileSettingsPage.waitForValidationMessage();
+            
+            validationMessage = await profileSettingsPage.getValidationMessage();
+            expect(validationMessage).toBe(profileTestData.validationMessages.displayNameTooShort);
+            expect(await profileSettingsPage.isDisplayNameTooShortMessageVisible()).toBe(true);
+            
+            // Test too long display name (30+ characters)
+            await profileSettingsPage.editDisplayName('A'.repeat(30));
+            await profileSettingsPage.saveDisplayName();
+            await profileSettingsPage.waitForValidationMessage();
+            
+            validationMessage = await profileSettingsPage.getValidationMessage();
+            expect(validationMessage).toBe(profileTestData.validationMessages.displayNameTooLong);
+            expect(await profileSettingsPage.isDisplayNameTooLongMessageVisible()).toBe(true);
+            
+            // Cleanup: restore original name
+            await profileSettingsPage.editDisplayName(originalName);
+            await profileSettingsPage.saveDisplayName();
+        });
     });
 
     /**
@@ -306,7 +374,7 @@ test.describe('Profile Settings Page Tests', () => {
      */
     test.describe('Account Details', () => {
         
-        test('TC_04_017: Should display correct email address', async () => {
+        test('TC_04_018: Should display correct email address', async () => {
             const displayedEmail = await profileSettingsPage.getDisplayedEmail();
             
             // Verify email format is valid
@@ -318,13 +386,13 @@ test.describe('Profile Settings Page Tests', () => {
             }
         });
 
-        test('TC_04_018: Should display current timezone', async () => {
+        test('TC_04_019: Should display current timezone', async () => {
             const currentTimezone = await profileSettingsPage.getCurrentTimezone();
             expect(currentTimezone).toBeTruthy();
             expect(currentTimezone).toMatch(/UTC[+-]\d{2}:\d{2}/);
         });
 
-        test('TC_04_019: Should open timezone dropdown', async () => {
+        test('TC_04_020: Should open timezone dropdown', async () => {
             await profileSettingsPage.openTimezoneDropdown();
             
             // Verify dropdown options are visible
@@ -332,7 +400,7 @@ test.describe('Profile Settings Page Tests', () => {
             expect(options.length).toBeGreaterThan(0);
         });
 
-        test('TC_04_020: Should search for timezones', async () => {
+        test('TC_04_021: Should search for timezones', async () => {
             await profileSettingsPage.searchTimezone('Auckland');
             
             // Verify search results contain Auckland
@@ -344,8 +412,8 @@ test.describe('Profile Settings Page Tests', () => {
         });
 
         test.describe('Timezone Selection Tests', () => {
-            testData.timezones.forEach((timezone, index) => {
-                test(`TC_04_021_${index + 1}: Should select timezone "${timezone}"`, async () => {
+            profileTestData.timezones.forEach((timezone, index) => {
+                test(`TC_04_022_${index + 1}: Should select timezone "${timezone}"`, async () => {
                     const originalTimezone = await profileSettingsPage.getCurrentTimezone();
                     
                     // Select new timezone
@@ -354,6 +422,12 @@ test.describe('Profile Settings Page Tests', () => {
                     // Verify timezone is updated
                     const updatedTimezone = await profileSettingsPage.getCurrentTimezone();
                     expect(updatedTimezone).toContain(timezone.split(' ')[0]); // UTC part
+                    
+                    // Verify success message appears
+                    if (await profileSettingsPage.isSuccessMessageVisible()) {
+                        const successMessage = await profileSettingsPage.getSuccessMessage();
+                        expect(successMessage).toContain(profileTestData.validationMessages.updateSuccess);
+                    }
                     
                     // Cleanup: restore original timezone
                     await profileSettingsPage.selectTimezone(originalTimezone);
@@ -367,7 +441,7 @@ test.describe('Profile Settings Page Tests', () => {
      */
     test.describe('Form Validation and Error Handling', () => {
         
-        test('TC_04_022: Should handle network errors gracefully', async ({ page }) => {
+        test('TC_04_023: Should handle network errors gracefully', async ({ page }) => {
             // Simulate network failure
             await page.route('**/api/profile/**', route => route.abort());
             
@@ -378,11 +452,11 @@ test.describe('Profile Settings Page Tests', () => {
             // Should show error message
             if (await profileSettingsPage.isErrorMessageVisible()) {
                 const errorMessage = await profileSettingsPage.getErrorMessage();
-                expect(errorMessage).toBeTruthy();
+                expect(errorMessage).toContain(profileTestData.validationMessages.updateError);
             }
         });
 
-        test('TC_04_023: Should show loading states during operations', async () => {
+        test('TC_04_024: Should show loading states during operations', async () => {
             // This test would depend on the specific implementation
             // Look for loading spinners during save operations
             await profileSettingsPage.editDisplayName('Loading Test');
@@ -392,13 +466,21 @@ test.describe('Profile Settings Page Tests', () => {
             await profileSettingsPage.takeScreenshot('loading-state');
         });
 
-        test('TC_04_024: Should validate form before submission', async () => {
-            // Test client-side validation
-            const isValid = profileSettingsPage.isValidDisplayName('Valid Name');
-            expect(isValid).toBe(true);
+        test('TC_04_025: Should validate form before submission', async () => {
+            // Test client-side validation with new validation rules
+            expect(profileSettingsPage.isValidDisplayName('Valid Name')).toBe(true);
+            expect(profileSettingsPage.isValidDisplayName('AB')).toBe(true); // Minimum valid
+            expect(profileSettingsPage.isValidDisplayName('A'.repeat(29))).toBe(true); // Maximum valid
             
-            const isInvalid = profileSettingsPage.isValidDisplayName('');
-            expect(isInvalid).toBe(false);
+            expect(profileSettingsPage.isValidDisplayName('')).toBe(false);
+            expect(profileSettingsPage.isValidDisplayName('A')).toBe(false); // Too short
+            expect(profileSettingsPage.isValidDisplayName('A'.repeat(30))).toBe(false); // Too long
+            
+            // Test validation error messages
+            expect(profileSettingsPage.getDisplayNameValidationError('')).toBe(profileTestData.validationMessages.displayNameRequired);
+            expect(profileSettingsPage.getDisplayNameValidationError('A')).toBe(profileTestData.validationMessages.displayNameTooShort);
+            expect(profileSettingsPage.getDisplayNameValidationError('A'.repeat(30))).toBe(profileTestData.validationMessages.displayNameTooLong);
+            expect(profileSettingsPage.getDisplayNameValidationError('Valid Name')).toBe(null);
         });
     });
 
@@ -407,7 +489,7 @@ test.describe('Profile Settings Page Tests', () => {
      */
     test.describe('Accessibility and UI/UX', () => {
         
-        test('TC_04_025: Should be keyboard navigable', async ({ page }) => {
+        test('TC_04_026: Should be keyboard navigable', async ({ page }) => {
             // Test tab navigation through form elements
             await page.keyboard.press('Tab');
             await expect(profileSettingsPage.displayNameInput).toBeFocused();
@@ -416,7 +498,7 @@ test.describe('Profile Settings Page Tests', () => {
             // Next focusable element should be focused
         });
 
-        test('TC_04_026: Should have proper ARIA labels', async () => {
+        test('TC_04_027: Should have proper ARIA labels', async () => {
             // Check for accessibility attributes
             const displayNameLabel = await profileSettingsPage.getElementAttribute(
                 profileSettingsPage.displayNameInput, 
@@ -427,7 +509,7 @@ test.describe('Profile Settings Page Tests', () => {
             expect(displayNameLabel || await profileSettingsPage.displayNameLabel.isVisible()).toBeTruthy();
         });
 
-        test('TC_04_027: Should be responsive on different screen sizes', async ({ page }) => {
+        test('TC_04_028: Should be responsive on different screen sizes', async ({ page }) => {
             // Test mobile viewport
             await page.setViewportSize({ width: 375, height: 667 });
             await expect(profileSettingsPage.settingsHeader).toBeVisible();
@@ -444,14 +526,17 @@ test.describe('Profile Settings Page Tests', () => {
             await profileSettingsPage.takeScreenshot('desktop-view');
         });
 
-        test('TC_04_028: Should handle long content gracefully', async () => {
-            // Test with very long display name
-            const longName = 'A'.repeat(50);
+        test('TC_04_029: Should handle long content gracefully', async () => {
+            // Test with display name at maximum valid length (29 characters)
+            const longName = 'A'.repeat(29);
             await profileSettingsPage.editDisplayName(longName);
             
-            // Verify UI doesn't break
+            // Verify UI doesn't break and name is accepted
             await expect(profileSettingsPage.displayNameInput).toBeVisible();
             await profileSettingsPage.takeScreenshot('long-content');
+            
+            // Should be valid
+            expect(profileSettingsPage.isValidDisplayName(longName)).toBe(true);
         });
     });
 
@@ -460,7 +545,7 @@ test.describe('Profile Settings Page Tests', () => {
      */
     test.describe('Integration Tests', () => {
         
-        test('TC_04_029: Should persist changes across page refresh', async ({ page }) => {
+        test('TC_04_030: Should persist changes across page refresh', async ({ page }) => {
             const newName = `Test User ${Date.now()}`;
             
             // Update display name
@@ -476,7 +561,7 @@ test.describe('Profile Settings Page Tests', () => {
             expect(persistedName).toBe(newName);
         });
 
-        test('TC_04_030: Should maintain session during profile updates', async ({ page }) => {
+        test('TC_04_031: Should maintain session during profile updates', async ({ page }) => {
             // Update profile settings
             await profileSettingsPage.editDisplayName('Session Test');
             await profileSettingsPage.saveDisplayName();
@@ -508,7 +593,7 @@ test.describe('Profile Settings Page Tests', () => {
  */
 test.describe('Performance Tests', () => {
     
-    test('TC_04_031: Should load profile settings page within acceptable time', async ({ page }) => {
+    test('TC_04_032: Should load profile settings page within acceptable time', async ({ page }) => {
         const profileSettingsPage = new ProfileSettingsPage(page);
         
         // Measure page load time
@@ -521,7 +606,7 @@ test.describe('Performance Tests', () => {
         console.log(`Profile Settings page loaded in ${loadTime}ms`);
     });
 
-    test('TC_04_032: Should handle multiple rapid updates', async ({ page }) => {
+    test('TC_04_033: Should handle multiple rapid updates', async ({ page }) => {
         const profileSettingsPage = new ProfileSettingsPage(page);
         await profileSettingsPage.navigateToProfileSettings();
         

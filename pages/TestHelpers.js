@@ -262,12 +262,30 @@ class TestHelpers {
         return emailRegex.test(email);
     }
     
-    // Validate display name
+    // Validate display name (2-30 characters)
     static isValidDisplayName(name) {
-        return name && 
-               typeof name === 'string' && 
-               name.trim().length > 0 && 
-               name.length <= 100;
+        if (!name || typeof name !== 'string') {
+            return false;
+        }
+        const trimmedName = name.trim();
+        return trimmedName.length >= 2 && trimmedName.length < 30;
+    }
+    
+    // Get display name validation error message
+    static getDisplayNameValidationError(name) {
+        if (!name || (typeof name === 'string' && name.trim().length === 0)) {
+            return "Display name is required";
+        }
+        if (typeof name === 'string') {
+            const trimmedName = name.trim();
+            if (trimmedName.length < 2) {
+                return "Display name must be at least 2 characters";
+            }
+            if (trimmedName.length >= 30) {
+                return "Display name must be less than 30 characters";
+            }
+        }
+        return null;
     }
     
     // Validate timezone format
