@@ -26,11 +26,11 @@ class ProfileSettingsPage {
         this.profileSettingsUrl = 'https://dev.chat.hilalsoftware.tools/settings/profile';
         
         // Header and Navigation Elements
-        this.settingsHeader = page.locator('h1:has-text("Settings")');
-        this.backToSettingsLink = page.locator('text=Back to Settings');
+        this.settingsHeader = page.locator('h1:has-text("Settings"), h2:has-text("Settings"), [data-testid="settings-header"]');
+        this.backToSettingsLink = page.locator('text=Back to Settings, a:has-text("Back")');
         
         // Display Image Section Elements
-        this.displayImageContainer = page.locator('[data-testid="display-image-container"]').first();
+        this.displayImageContainer = page.locator('[data-testid="display-image-container"], .profile-image-container').first();
         this.displayImage = page.locator('img[alt*="profile"], img[alt*="avatar"], .profile-image, .avatar-image').first();
         this.imageEditButton = page.locator('button:has-text("Edit"), [data-testid="edit-image-btn"]').first();
         this.imageUploadButton = page.locator('button:has-text("Upload"), [data-testid="upload-image-btn"]').first();
@@ -191,6 +191,12 @@ class ProfileSettingsPage {
         await this.page.waitForTimeout(300);
     }
     
+    // Adjust saturation filter
+    async adjustSaturation(value) {
+        await this.saturationSlider.fill(value.toString());
+        await this.page.waitForTimeout(300);
+    }
+    
     // Save image changes
     async saveImageChanges() {
         await this.saveChangesButton.click();
@@ -198,7 +204,7 @@ class ProfileSettingsPage {
     }
     
     // Cancel image editing
-    async cancelImageEditing() {
+    async cancelImageEdit() {
         await this.cancelButton.click();
         await this.editImageModal.waitFor({ state: 'hidden' });
     }
@@ -220,67 +226,66 @@ class ProfileSettingsPage {
     
     // Save display name changes
     async saveDisplayName() {
-        if (await this.displayNameSaveButton.isVisible()) {
-            await this.displayNameSaveButton.click();
-        }
+        await this.displayNameSaveButton.click();
+        await this.page.waitForTimeout(1000); // Wait for save operation
     }
     
     // Cancel display name editing
     async cancelDisplayNameEdit() {
-        if (await this.displayNameCancelButton.isVisible()) {
-            await this.displayNameCancelButton.click();
-        }
+        await this.displayNameCancelButton.click();
+    }
+    
+    // Click edit display name button
+    async clickEditDisplayName() {
+        await this.displayNameEditButton.click();
     }
 
     /**
      * Account Details Methods
      */
     
-    // Get displayed email
+    // Get displayed email address
     async getDisplayedEmail() {
-        const emailElement = await this.emailValue.first();
-        if (await emailElement.isVisible()) {
-            return await emailElement.inputValue() || await emailElement.textContent();
+        try {
+            return await this.emailValue.inputValue();
+        } catch {
+            return await this.emailText.textContent();
         }
-        return await this.emailText.textContent();
     }
     
     // Get current timezone
     async getCurrentTimezone() {
-        return await this.timezoneCurrentValue.textContent();
+        try {
+            return await this.timezoneCurrentValue.textContent();
+        } catch {
+            return await this.timezoneDropdown.inputValue();
+        }
     }
     
     // Open timezone dropdown
     async openTimezoneDropdown() {
-        if (await this.timezoneDropdownTrigger.isVisible()) {
-            await this.timezoneDropdownTrigger.click();
-        } else {
-            await this.timezoneDropdown.click();
-        }
+        await this.timezoneDropdownTrigger.click();
         await this.page.waitForTimeout(500);
     }
     
     // Search for timezone
     async searchTimezone(searchTerm) {
         await this.openTimezoneDropdown();
-        if (await this.timezoneSearchInput.isVisible()) {
-            await this.timezoneSearchInput.fill(searchTerm);
-            await this.page.waitForTimeout(500);
-        }
-    }
-    
-    // Select timezone by text
-    async selectTimezone(timezoneText) {
-        await this.openTimezoneDropdown();
-        const option = this.page.locator(`text=${timezoneText}`).first();
-        await option.click();
+        await this.timezoneSearchInput.fill(searchTerm);
         await this.page.waitForTimeout(500);
     }
     
-    // Get available timezone options
+    // Get timezone options
     async getTimezoneOptions() {
+        const options = await this.timezoneOptions.allTextContents();
+        return options;
+    }
+    
+    // Select timezone
+    async selectTimezone(timezone) {
         await this.openTimezoneDropdown();
-        return await this.timezoneOptions.allTextContents();
+        await this.page.locator(`text="${timezone}"`).click();
+        await this.page.waitForTimeout(500);
     }
 
     /**
@@ -398,11 +403,10 @@ class ProfileSettingsPage {
         return emailRegex.test(email);
     }
     
-    // Check if form has unsaved changes
-    async hasUnsavedChanges() {
-        // This would depend on the specific implementation
-        // Could check for dirty form indicators, enabled save buttons, etc.
-        return await this.saveButton.isEnabled();
+    // Validate timezone format
+    isValidTimezone(timezone) {
+        const timezoneRegex = /^UTC[+-]\d{2}:\d{2}/;
+        return timezoneRegex.test(timezone);
     }
 
     /**
@@ -560,26 +564,6 @@ class ProfileSettingsPage {
         return await ProfileSettingsPage.takeScreenshot(page, `FAILED-${testTitle.replace(/\s+/g, '-')}`);
     }
     
-    // Capture page HTML for debugging
-    static async capturePageHTML(page, name) {
-        try {
-            const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-            const fileName = `${name}-${timestamp}.html`;
-            const htmlPath = path.join(__dirname, '..', 'debug', fileName);
-            
-            ProfileSettingsPage.ensureDirectoryExists(path.dirname(htmlPath));
-            
-            const html = await page.content();
-            fs.writeFileSync(htmlPath, html, 'utf8');
-            
-            console.log(`HTML captured: ${fileName}`);
-            return htmlPath;
-        } catch (error) {
-            console.error('Failed to capture HTML:', error.message);
-            return null;
-        }
-    }
-
     // Create directory if it doesn't exist
     static ensureDirectoryExists(dirPath) {
         try {
@@ -675,35 +659,6 @@ class ProfileSettingsPage {
         }
     }
 
-    // Get browser info
-    static async getBrowserInfo(page) {
-        try {
-            const userAgent = await page.evaluate(() => navigator.userAgent);
-            const viewport = page.viewportSize();
-            
-            return {
-                userAgent,
-                viewport,
-                url: page.url(),
-                title: await page.title()
-            };
-        } catch (error) {
-            console.error('Failed to get browser info:', error.message);
-            return {};
-        }
-    }
-    
-    // Set viewport size for responsive testing
-    static async setViewportSize(page, width, height) {
-        try {
-            await page.setViewportSize({ width, height });
-            return true;
-        } catch (error) {
-            console.error('Failed to set viewport size:', error.message);
-            return false;
-        }
-    }
-
     // Fill form with data object
     static async fillForm(page, formData) {
         try {
@@ -747,47 +702,7 @@ class ProfileSettingsPage {
             return false;
         }
     }
-
-    // Check for basic accessibility issues
-    static async checkAccessibility(page) {
-        try {
-            const issues = await page.evaluate(() => {
-                const problems = [];
-                
-                // Check for images without alt text
-                const images = document.querySelectorAll('img:not([alt])');
-                if (images.length > 0) {
-                    problems.push(`${images.length} images without alt text`);
-                }
-                
-                // Check for form inputs without labels
-                const inputs = document.querySelectorAll('input:not([aria-label]):not([aria-labelledby])');
-                const unlabeledInputs = Array.from(inputs).filter(input => {
-                    const label = document.querySelector(`label[for="${input.id}"]`);
-                    return !label;
-                });
-                if (unlabeledInputs.length > 0) {
-                    problems.push(`${unlabeledInputs.length} form inputs without labels`);
-                }
-                
-                // Check for buttons without accessible names
-                const buttons = document.querySelectorAll('button:not([aria-label]):not([aria-labelledby])');
-                const unlabeledButtons = Array.from(buttons).filter(button => 
-                    !button.textContent.trim()
-                );
-                if (unlabeledButtons.length > 0) {
-                    problems.push(`${unlabeledButtons.length} buttons without accessible names`);
-                }
-                
-                return problems;
-            });
-            
-            return issues;
-        } catch (error) {
-            console.error('Accessibility check failed:', error.message);
-            return [];
-        }
-    }
 }
 
 module.exports = ProfileSettingsPage;
+

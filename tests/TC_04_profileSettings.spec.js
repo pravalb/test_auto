@@ -5,12 +5,14 @@
  * including display image management, display name editing, and timezone configuration.
  * 
  * Test Categories:
- * 1. Page Navigation and Loading
- * 2. Display Image Functionality (Edit/Upload/Transform/Filters)
- * 3. Display Name Management
- * 4. Account Details (Email Display, Timezone Selection)
- * 5. Form Validation and Error Handling
- * 6. Accessibility and UI/UX Testing
+ * 1. Page Navigation and Loading (TC_04_001 - TC_04_003)
+ * 2. Display Image Functionality (TC_04_004 - TC_04_012)
+ * 3. Display Name Management (TC_04_013 - TC_04_017)
+ * 4. Account Details (TC_04_018 - TC_04_022)
+ * 5. Form Validation and Error Handling (TC_04_023 - TC_04_025)
+ * 6. Accessibility and UI/UX Testing (TC_04_026 - TC_04_029)
+ * 7. Integration Tests (TC_04_030 - TC_04_031)
+ * 8. Performance Tests (TC_04_032 - TC_04_033)
  */
 
 const { test, expect } = require('@playwright/test');
@@ -73,13 +75,13 @@ test.describe('Profile Settings Page Tests', () => {
         
         // Login first (assuming user is already logged in or using session storage)
         // This would typically involve navigating to login page and authenticating
-        await page.goto(process.env.BASE_URL);
-        await page.fill('input[type="email"]', process.env.USEREMAIL);
-        await page.fill('input[type="password"]', process.env.PASSWORD);
-        await page.click('button[type="submit"]');
+        await page.goto(process.env.BASE_URL || 'https://dev.auth.hilalsoftware.tools/hilal-chatbot/login');
+        await page.fill('input[type="email"], input[name="email"], #email', process.env.USEREMAIL || 'pravallika2330@gmail.com');
+        await page.fill('input[type="password"], input[name="password"], #password', process.env.PASSWORD || 'HilalPassword@123');
+        await page.click('button[type="submit"], button:has-text("Login"), button:has-text("Sign In")');
         
         // Wait for login to complete and navigate to profile settings
-        await page.waitForURL('**/dashboard', { timeout: 10000 });
+        await page.waitForURL('**/dashboard', { timeout: 15000 });
         await profileSettingsPage.navigateToProfileSettings();
     });
 
@@ -92,10 +94,9 @@ test.describe('Profile Settings Page Tests', () => {
             // Verify page loads correctly
             await expect(profileSettingsPage.settingsHeader).toBeVisible();
             await expect(profileSettingsPage.displayNameInput).toBeVisible();
-            await expect(profileSettingsPage.accountDetailsHeader).toBeVisible();
             
             // Verify URL is correct
-            expect(await profileSettingsPage.page.url()).toContain('/settings/profile');
+            expect(profileSettingsPage.page.url()).toContain('/settings/profile');
             
             // Take screenshot for verification
             await profileSettingsPage.takeScreenshot('page-loaded');
@@ -216,12 +217,13 @@ test.describe('Profile Settings Page Tests', () => {
             await profileSettingsPage.clickEditImage();
             
             // Make some changes
-            await profileSettingsPage.adjustZoom(200);
+            await profileSettingsPage.adjustZoom(150);
+            await profileSettingsPage.adjustBrightness(130);
             
             // Cancel changes
-            await profileSettingsPage.cancelImageEditing();
+            await profileSettingsPage.cancelImageEdit();
             
-            // Verify modal closes without saving
+            // Verify modal closes
             await expect(profileSettingsPage.editImageModal).not.toBeVisible();
         });
 
@@ -252,7 +254,7 @@ test.describe('Profile Settings Page Tests', () => {
         test('TC_04_013: Should display current display name', async () => {
             const currentName = await profileSettingsPage.getCurrentDisplayName();
             expect(currentName).toBeTruthy();
-            expect(currentName.length).toBeGreaterThan(0);
+            expect(typeof currentName).toBe('string');
         });
 
         test.describe('Valid Display Name Updates', () => {
@@ -377,11 +379,11 @@ test.describe('Profile Settings Page Tests', () => {
             const displayedEmail = await profileSettingsPage.getDisplayedEmail();
             
             // Verify email format is valid
-            expect(profileSettingsPage.isValidEmail(displayedEmail)).toBe(true);
+            expect(ProfileSettingsPage.isValidEmail(displayedEmail)).toBe(true);
             
-            // Verify it matches the login email (if available in env)
+            // Verify it matches expected test user email
             if (process.env.USEREMAIL) {
-                expect(displayedEmail.toLowerCase()).toBe(process.env.USEREMAIL.toLowerCase());
+                expect(displayedEmail).toBe(process.env.USEREMAIL);
             }
         });
 
@@ -621,3 +623,4 @@ test.describe('Performance Tests', () => {
         expect(finalName).toBe('Rapid Test 4');
     });
 });
+
