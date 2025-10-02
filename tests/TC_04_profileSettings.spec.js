@@ -86,7 +86,7 @@ test.describe('Profile Settings Page Tests', () => {
         await page.getByText('Back to application').click();
         
         // Wait for dashboard to load (look for "Inbox" text instead of URL)
-        await page.getByText('Inbox').waitFor({ state: 'visible', timeout: 15000 });
+        await page.getByText('Inbox').first().waitFor({ state: 'visible', timeout: 15000 });
         
         // Now navigate to profile settings
         await profileSettingsPage.navigateToProfileSettings();

@@ -13,9 +13,7 @@
       "",
       "   ",
       "A",
-      "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-      null,
-      undefined
+      "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
     ],
     "validationMessages": {
       "displayNameRequired": "Display name is required",
@@ -196,4 +194,3 @@
     }
   }
 }
-
