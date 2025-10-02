@@ -103,6 +103,19 @@ test.describe('Profile Settings Page Tests', () => {
         test('TC_04_001: Should load Profile Settings page successfully', async () => {
             // Verify page loads correctly
             await expect(profileSettingsPage.settingsHeader).toBeVisible();
+            
+            // Debug: Log all input elements on the page
+            const allInputs = await page.locator('input').all();
+            console.log(`Found ${allInputs.length} input elements on the page`);
+            for (let i = 0; i < allInputs.length; i++) {
+                const input = allInputs[i];
+                const name = await input.getAttribute('name') || 'no-name';
+                const type = await input.getAttribute('type') || 'no-type';
+                const value = await input.getAttribute('value') || 'no-value';
+                const placeholder = await input.getAttribute('placeholder') || 'no-placeholder';
+                console.log(`Input ${i}: name="${name}", type="${type}", value="${value}", placeholder="${placeholder}"`);
+            }
+            
             await expect(profileSettingsPage.displayNameInput).toBeVisible();
             
             // Verify URL is correct

@@ -64,7 +64,7 @@ class ProfileSettingsPage {
         
         // Display Name Section Elements
         this.displayNameLabel = page.locator('label:has-text("Display name"), text=Display name');
-        this.displayNameInput = page.locator('input[name="displayName"], input[placeholder*="name"], #displayName, input[type="text"]');
+        this.displayNameInput = page.locator('input[name="displayName"], input[placeholder*="name"], #displayName, input[type="text"], input[value*="Pravallika"], input').first();
         this.displayNameEditButton = page.locator('button:near(input[name="displayName"]):has-text("Edit"), [data-testid="edit-display-name"]');
         this.displayNameSaveButton = page.locator('button:near(input[name="displayName"]):has-text("Save"), [data-testid="save-display-name"]');
         this.displayNameCancelButton = page.locator('button:near(input[name="displayName"]):has-text("Cancel"), [data-testid="cancel-display-name"]');
