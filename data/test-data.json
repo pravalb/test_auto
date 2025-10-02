@@ -1,0 +1,65 @@
+{
+  "profileSettings": {
+    "validDisplayNames": [
+      "John Doe",
+      "Jane Smith",
+      "Test User 123",
+      "محمد علي",
+      "José García",
+      "A",
+      "Very Long Display Name That Is Still Valid"
+    ],
+    "invalidDisplayNames": [
+      "",
+      "   ",
+      "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+      null,
+      undefined
+    ],
+    "timezones": [
+      "UTC+00:00 Enderbury",
+      "UTC+14:00 Kiritimati", 
+      "UTC-13:45 Chatham",
+      "UTC-13:00 McMurdo",
+      "UTC-13:00 Apia",
+      "UTC-13:00 Auckland",
+      "UTC-13:00 Fakaofo",
+      "UTC-13:00 Tongatapu",
+      "UTC-12:00 Anadyr"
+    ],
+    "imageFormats": {
+      "supported": [".jpg", ".jpeg", ".png", ".webp", ".gif"],
+      "unsupported": [".pdf", ".doc", ".txt", ".mp4", ".svg"]
+    },
+    "imageSizeLimits": {
+      "maxSizeBytes": 5242880,
+      "minWidth": 100,
+      "minHeight": 100,
+      "maxWidth": 4000,
+      "maxHeight": 4000
+    }
+  },
+  "testEnvironments": {
+    "development": {
+      "baseUrl": "https://dev.chat.hilalsoftware.tools",
+      "authUrl": "https://dev.auth.hilalsoftware.tools/hilal-chatbot/login",
+      "profileSettingsUrl": "https://dev.chat.hilalsoftware.tools/settings/profile"
+    },
+    "staging": {
+      "baseUrl": "https://staging.chat.hilalsoftware.tools",
+      "authUrl": "https://staging.auth.hilalsoftware.tools/hilal-chatbot/login", 
+      "profileSettingsUrl": "https://staging.chat.hilalsoftware.tools/settings/profile"
+    }
+  },
+  "testUsers": {
+    "validUser": {
+      "email": "pravallika2330@gmail.com",
+      "password": "HilalPassword@123",
+      "displayName": "Pravallika"
+    },
+    "invalidUser": {
+      "email": "pravallika2330$gmail.com",
+      "password": "--///@@23"
+    }
+  }
+}
