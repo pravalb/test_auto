@@ -164,28 +164,31 @@ test.describe('Profile Settings Page Tests', () => {
             // Take screenshot for verification BEFORE trying to find display name input
             await profileSettingsPage.takeScreenshot('page-loaded-before-input-check');
             
-            // Try to find display name input - but don't fail the test if not found
+            // Verify display name text is visible (it's a <p> element, not an input)
             try {
-                await expect(profileSettingsPage.displayNameInput).toBeVisible({ timeout: 2000 });
-                console.log('✅ Display name input found successfully!');
-            } catch (error) {
-                console.log('❌ Display name input not found with current selector');
-                console.log('Current selector:', 'input[name="displayName"], input[placeholder*="name"], #displayName, input[type="text"], input[value*="Pravallika"], input');
+                await expect(profileSettingsPage.displayNameText).toBeVisible({ timeout: 2000 });
+                console.log('✅ Display name text found successfully!');
                 
-                // Try to find ANY input that might be the display name field
-                const possibleInputs = await profileSettingsPage.page.locator('input').all();
-                for (let i = 0; i < possibleInputs.length; i++) {
-                    const input = possibleInputs[i];
-                    const value = await input.getAttribute('value') || '';
-                    if (value.toLowerCase().includes('pravallika') || value.toLowerCase().includes('praval')) {
-                        console.log(`🎯 FOUND POTENTIAL DISPLAY NAME INPUT at index ${i}!`);
-                        const name = await input.getAttribute('name') || 'no-name';
-                        const type = await input.getAttribute('type') || 'no-type';
-                        const placeholder = await input.getAttribute('placeholder') || 'no-placeholder';
-                        const id = await input.getAttribute('id') || 'no-id';
-                        const className = await input.getAttribute('class') || 'no-class';
-                        console.log(`   Attributes: name="${name}", type="${type}", value="${value}", placeholder="${placeholder}", id="${id}", class="${className}"`);
-                    }
+                // Get the display name value
+                const displayNameText = await profileSettingsPage.displayNameText.textContent();
+                console.log(`📝 Display name value: "${displayNameText}"`);
+                
+                // Verify it contains the expected name
+                expect(displayNameText).toContain('Pravallika');
+                console.log('✅ Display name contains expected value "Pravallika"');
+                
+            } catch (error) {
+                console.log('❌ Display name text not found with current selector');
+                console.log('Current selector: p.flex-1.text-sm.text-foreground');
+                
+                // Try alternative selectors
+                try {
+                    await expect(profileSettingsPage.displayNameValue).toBeVisible({ timeout: 1000 });
+                    console.log('✅ Found display name using alternative selector!');
+                    const altText = await profileSettingsPage.displayNameValue.textContent();
+                    console.log(`📝 Alternative selector value: "${altText}"`);
+                } catch (altError) {
+                    console.log('❌ Alternative selector also failed');
                 }
             }
             

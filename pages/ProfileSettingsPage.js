@@ -64,10 +64,19 @@ class ProfileSettingsPage {
         
         // Display Name Section Elements
         this.displayNameLabel = page.locator('label:has-text("Display name"), text=Display name');
-        this.displayNameInput = page.locator('input[name="displayName"], input[placeholder*="name"], #displayName, input[type="text"], input[value*="Pravallika"], input').first();
-        this.displayNameEditButton = page.locator('button:near(input[name="displayName"]):has-text("Edit"), [data-testid="edit-display-name"]');
-        this.displayNameSaveButton = page.locator('button:near(input[name="displayName"]):has-text("Save"), [data-testid="save-display-name"]');
-        this.displayNameCancelButton = page.locator('button:near(input[name="displayName"]):has-text("Cancel"), [data-testid="cancel-display-name"]');
+        
+        // Display name is a read-only <p> element, not an input
+        this.displayNameText = page.locator('p.flex-1.text-sm.text-foreground');
+        this.displayNameValue = page.locator('p:has-text("Pravallika")').first();
+        
+        // Look for edit functionality near the display name
+        this.displayNameEditButton = page.locator('button:near(p:has-text("Pravallika")):has-text("Edit"), [data-testid="edit-display-name"], button[aria-label*="edit"]').first();
+        this.displayNameContainer = page.locator('.space-y-2:has(p:has-text("Pravallika"))');
+        
+        // These might appear when editing is activated
+        this.displayNameInput = page.locator('input[name="displayName"], input[placeholder*="name"], #displayName').first();
+        this.displayNameSaveButton = page.locator('button:has-text("Save"), [data-testid="save-display-name"]').first();
+        this.displayNameCancelButton = page.locator('button:has-text("Cancel"), [data-testid="cancel-display-name"]').first();
         
         // Account Details Section Elements
         this.accountDetailsHeader = page.locator('h2:has-text("Account Details"), h3:has-text("Account Details")');
