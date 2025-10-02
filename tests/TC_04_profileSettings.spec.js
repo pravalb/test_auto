@@ -105,7 +105,7 @@ test.describe('Profile Settings Page Tests', () => {
             await expect(profileSettingsPage.settingsHeader).toBeVisible();
             
             // Debug: Log all input elements on the page
-            const allInputs = await page.locator('input').all();
+            const allInputs = await profileSettingsPage.page.locator('input').all();
             console.log(`\n=== DEBUGGING INPUT ELEMENTS ===`);
             console.log(`Found ${allInputs.length} input elements on the page`);
             
@@ -133,7 +133,7 @@ test.describe('Profile Settings Page Tests', () => {
                 console.log('Current selector:', 'input[name="displayName"], input[placeholder*="name"], #displayName, input[type="text"], input[value*="Pravallika"], input');
                 
                 // Try to find ANY input that might be the display name field
-                const possibleInputs = await page.locator('input').all();
+                const possibleInputs = await profileSettingsPage.page.locator('input').all();
                 for (let i = 0; i < possibleInputs.length; i++) {
                     const input = possibleInputs[i];
                     const value = await input.getAttribute('value') || '';
