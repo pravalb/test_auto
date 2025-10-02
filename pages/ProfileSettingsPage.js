@@ -70,8 +70,8 @@ class ProfileSettingsPage {
         this.displayNameValue = page.locator('p:has-text("Pravallika")').first();
         
         // Edit functionality - the pen/pencil icon next to display name
-        this.displayNameEditIcon = page.locator('svg[data-testid="edit-icon"], button:has(svg):near(p:has-text("Pravallika")), [aria-label*="edit"]:near(p:has-text("Pravallika"))').first();
-        this.displayNameEditButton = page.locator('button:near(p:has-text("Pravallika"))').first();
+        this.displayNameEditButton = page.locator('button[data-tour-action="name-edit"]');
+        this.displayNameEditIcon = page.locator('button[data-tour-action="name-edit"] svg.lucide-pen-line');
         
         // Container for the entire display name section
         this.displayNameContainer = page.locator('.space-y-2:has(p:has-text("Pravallika")), .flex.flex-col.gap-4:has(p:has-text("Pravallika"))').first();
@@ -237,54 +237,16 @@ class ProfileSettingsPage {
     
     // Click the edit icon to enable editing
     async clickEditDisplayName() {
-        console.log('🔍 Attempting to click edit button...');
+        console.log('🔍 Clicking edit button with data-tour-action="name-edit"...');
         
-        // Try multiple strategies to find and click the edit button
-        const strategies = [
-            {
-                name: 'Edit button near Pravallika',
-                locator: this.displayNameEditButton
-            },
-            {
-                name: 'Edit icon SVG',
-                locator: this.displayNameEditIcon
-            },
-            {
-                name: 'Any button near display name',
-                locator: this.page.locator('button:near(p:has-text("Pravallika"))')
-            },
-            {
-                name: 'SVG in display name container',
-                locator: this.page.locator('.flex.gap-2.items-center svg, .space-y-2 svg')
-            },
-            {
-                name: 'Clickable element with edit-like attributes',
-                locator: this.page.locator('[aria-label*="edit"], [data-testid*="edit"], button:has(svg)')
-            }
-        ];
-        
-        let clicked = false;
-        for (const strategy of strategies) {
-            try {
-                console.log(`🔍 Trying strategy: ${strategy.name}`);
-                await strategy.locator.first().click({ timeout: 2000 });
-                console.log(`✅ Successfully clicked using: ${strategy.name}`);
-                clicked = true;
-                break;
-            } catch (error) {
-                console.log(`❌ Strategy failed: ${strategy.name} - ${error.message}`);
-            }
-        }
-        
-        if (!clicked) {
-            throw new Error('Could not find or click edit button using any strategy');
-        }
+        // Click the specific edit button
+        await this.displayNameEditButton.click();
+        console.log('✅ Successfully clicked edit button');
         
         // Wait a moment for the UI to respond
         await this.page.waitForTimeout(1000);
         
         console.log('🔍 Waiting for input field to appear...');
-        // Don't wait for input here - let the test handle it
     }
     
     // Edit display name (assumes edit mode is already active)
