@@ -16,12 +16,10 @@ test('User should be able to login with valid credentials', async ({ page }) => 
     await page.waitForTimeout(5000);
 });
 
-test.skip('User should not be able to login with Invalid credentials', async ({ page }) => {
+test('User should not be able to login with Invalid credentials', async ({ page }) => {
   loginPage = new LoginPage(page)
   
     await loginPage.openApp()
     await loginPage.performInvlaidLogin()
     await page.waitForTimeout(5000);
 });
-
-
