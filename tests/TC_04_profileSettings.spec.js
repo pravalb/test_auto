@@ -73,15 +73,22 @@ test.describe('Profile Settings Page Tests', () => {
     test.beforeEach(async ({ page }) => {
         profileSettingsPage = new ProfileSettingsPage(page);
         
-        // Login first (assuming user is already logged in or using session storage)
-        // This would typically involve navigating to login page and authenticating
+        // Login first using the same flow as the working login test
         await page.goto(process.env.BASE_URL || 'https://dev.auth.hilalsoftware.tools/hilal-chatbot/login');
-        await page.fill('input[type="email"], input[name="email"], #email', process.env.USEREMAIL || 'pravallika2330@gmail.com');
-        await page.fill('input[type="password"], input[name="password"], #password', process.env.PASSWORD || 'HilalPassword@123');
-        await page.click('button[type="submit"], button:has-text("Login"), button:has-text("Sign In")');
         
-        // Wait for login to complete and navigate to profile settings
-        await page.waitForURL('**/dashboard', { timeout: 15000 });
+        // Fill login credentials using the same selectors as loginPage.js
+        await page.getByLabel('Email address').fill(process.env.USEREMAIL || 'pravallika2330@gmail.com');
+        await page.getByLabel('Password').fill(process.env.PASSWORD || 'HilalPassword@123');
+        await page.getByRole('button', {name: 'Sign in'}).click();
+        
+        // Wait for page load and click "Back to application"
+        await page.waitForLoadState('networkidle');
+        await page.getByText('Back to application').click();
+        
+        // Wait for dashboard to load (look for "Inbox" text instead of URL)
+        await page.getByText('Inbox').waitFor({ state: 'visible', timeout: 15000 });
+        
+        // Now navigate to profile settings
         await profileSettingsPage.navigateToProfileSettings();
     });
 
@@ -623,4 +630,3 @@ test.describe('Performance Tests', () => {
         expect(finalName).toBe('Rapid Test 4');
     });
 });
-

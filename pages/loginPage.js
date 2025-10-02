@@ -1,5 +1,5 @@
 import BasePage from "./basePage";
-import { dashboardChatbotTitle } from "../data/testData.json";
+import testData from "../data/testData.json";
 import { expect } from "allure-playwright";
 
 class LoginPage extends BasePage {
@@ -24,7 +24,7 @@ class LoginPage extends BasePage {
         await this.signInButton.click();
         await this.waitforPageLoad();
         await this.backToAppButton.click();
-        await expect(this.verifyChatbotDashboardtext).toContainText(dashboardChatbotTitle);
+        await expect(this.verifyChatbotDashboardtext).toContainText(testData.dashboardChatbotTitle);
         
     }
 
