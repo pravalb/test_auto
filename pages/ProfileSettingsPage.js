@@ -81,16 +81,17 @@ class ProfileSettingsPage {
             console.log('Primary selector failed, trying alternatives...');
         }
         
-        // Try alternative selectors
+        // Try alternative selectors - USING EXACT SELECTORS FROM HTML
         const alternativeSelectors = [
+            '[data-tour="user-profile-name"]',
+            '[data-tour="user-profile-name"] div',
+            '[data-tour="user-profile-name"] p',
+            '[data-tour="user-profile-name"] span',
+            'div.flex-1.w-full.sm\\:w-auto',
             'p:has-text("Pravallika")',
             'p:has-text("Updated")',
-            'p.flex-1.text-sm.text-foreground',
-            'p.flex-1',
-            'div:has-text("Pravallika") p',
-            'div:has-text("Updated") p',
-            '[data-testid*="display-name"]',
-            '.display-name-value',
+            'div:has-text("Pravallika")',
+            'div:has-text("Updated")',
             'span:has-text("Pravallika")',
             'span:has-text("Updated")',
             '*:has-text("Pravallika Updated")',
@@ -129,9 +130,19 @@ class ProfileSettingsPage {
 
     async clickEditDisplayName() {
         console.log('🔍 Clicking edit button...');
-        await this.displayNameEditButton.click();
-        await this.page.waitForTimeout(1000);
-        console.log('✅ Edit button clicked');
+        try {
+            await this.displayNameEditButton.click();
+            await this.page.waitForTimeout(1000);
+            console.log('✅ Edit button clicked');
+        } catch (error) {
+            if (error.message.includes('Target page, context or browser has been closed')) {
+                console.log('⚠️ Page closed during edit button click - this may be expected');
+                throw error; // Re-throw to stop the test gracefully
+            } else {
+                console.log('❌ Edit button click failed:', error.message);
+                throw error;
+            }
+        }
     }
 
     async editDisplayName(newName) {
@@ -282,6 +293,10 @@ class ProfileSettingsPage {
 
     async selectTimezone(timezone) {
         await this.openTimezoneDropdown();
+        
+        // Wait for dropdown options to load
+        console.log('⏳ Waiting for timezone options to load...');
+        await this.page.waitForTimeout(2000);
         
         console.log(`🔍 Looking for timezone option: "${timezone}"`);
         
