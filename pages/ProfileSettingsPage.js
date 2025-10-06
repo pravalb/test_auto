@@ -32,7 +32,7 @@ class ProfileSettingsPage {
         this.timezoneLabel = page.locator('label:has-text("Timezone")').first();
         this.timezoneValue = page.locator('p:has-text("UTC")').first();
         this.timezoneEditButton = page.locator('button[data-tour-action="timezone-edit"]').first();
-        this.timezoneDropdown = page.locator('[data-tour="user-profile-timezone"] [role="combobox"], [data-tour="user-profile-timezone"] select, div:has-text("Timezone") + div [role="combobox"]').first();
+        this.timezoneDropdown = page.locator('[data-tour="user-profile-timezone"] button[role="combobox"]').first();
         
         // Display image elements
         this.displayImage = page.locator('img[alt*="profile"], img[alt*="avatar"], .profile-image, .avatar-image, img[src*="avatar"], img[src*="profile"], img.rounded, img.rounded-full, [data-testid*="avatar"], [data-testid*="profile"]').first();
@@ -291,46 +291,54 @@ class ProfileSettingsPage {
     }
 
     async openTimezoneDropdown() {
-        console.log('🔍 Attempting to open timezone dropdown...');
+        console.log('🔍 Waiting for timezone combobox to appear after edit click...');
         
         try {
-            // Try normal click first
-            await this.timezoneDropdown.click({ timeout: 5000 });
-            console.log('✅ Timezone dropdown clicked normally');
+            // Wait for the UI transformation - the combobox appears after clicking edit
+            const comboboxSelector = '[data-tour="user-profile-timezone"] button[role="combobox"]';
+            await this.page.waitForSelector(comboboxSelector, { timeout: 5000 });
+            console.log('✅ Timezone combobox appeared after UI transformation');
+            
+            // Click the combobox to open dropdown
+            const combobox = this.page.locator(comboboxSelector).first();
+            await combobox.click();
+            console.log('✅ Timezone combobox clicked');
+            
         } catch (error) {
-            console.log('⚠️ Normal click failed, trying force click...');
-            try {
-                // Try force click
-                await this.timezoneDropdown.click({ force: true });
-                console.log('✅ Timezone dropdown force clicked');
-            } catch (forceError) {
-                console.log('⚠️ Force click failed, trying alternative selectors...');
-                
-                // Try alternative selectors (more specific to timezone section)
-                const alternativeSelectors = [
-                    '[data-tour="user-profile-timezone"] [role="combobox"]', // Combobox in timezone section
-                    '[data-tour="user-profile-timezone"] select', // Select in timezone section
-                    'div:has-text("Timezone") + div [role="combobox"]', // Combobox after Timezone label
-                    'div:has-text("UTC") [role="combobox"]', // Combobox near UTC text
-                    '[role="combobox"]', // Generic combobox
-                    'button[role="combobox"]',
-                    'select'
-                ];
-                
-                for (const selector of alternativeSelectors) {
-                    try {
-                        const element = this.page.locator(selector).first();
-                        await element.click({ force: true });
-                        console.log(`✅ Clicked timezone dropdown with selector: ${selector}`);
+            console.log('⚠️ Combobox not found, trying alternative approach...');
+            
+            // Try alternative selectors for the transformed UI
+            const alternativeSelectors = [
+                '[data-tour="user-profile-timezone"] [role="combobox"]', // Combobox in timezone section
+                'button[role="combobox"]:has-text("UTC")', // Combobox with UTC text
+                'button[aria-haspopup="dialog"]', // Button that opens dialog
+                '[data-state="closed"][role="combobox"]' // Closed combobox
+            ];
+            
+            let found = false;
+            for (const selector of alternativeSelectors) {
+                try {
+                    const element = this.page.locator(selector).first();
+                    const count = await element.count();
+                    if (count > 0) {
+                        console.log(`✅ Found combobox with selector: ${selector}`);
+                        await element.click();
+                        console.log('✅ Alternative combobox clicked');
+                        found = true;
                         break;
-                    } catch (altError) {
-                        continue;
                     }
+                } catch (altError) {
+                    continue;
                 }
+            }
+            
+            if (!found) {
+                console.log('❌ Could not find timezone combobox after UI transformation');
             }
         }
         
-        await this.page.waitForTimeout(1000);
+        // Wait for dropdown options to load
+        await this.page.waitForTimeout(2000);
     }
 
     async selectTimezone(timezone) {
