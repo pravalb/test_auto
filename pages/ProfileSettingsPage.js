@@ -31,6 +31,7 @@ class ProfileSettingsPage {
         this.emailValue = page.locator('p:has-text("@")').first();
         this.timezoneLabel = page.locator('label:has-text("Timezone")').first();
         this.timezoneValue = page.locator('p:has-text("UTC")').first();
+        this.timezoneEditButton = page.locator('button:has(svg):near([data-tour="user-profile-timezone"]), button[data-tour-action*="timezone"], button:has([class*="edit"]):near([data-tour="user-profile-timezone"]), button:has(svg[class*="edit"])').first();
         this.timezoneDropdown = page.locator('select, [role="combobox"]').first();
         
         // Display image elements
@@ -249,6 +250,46 @@ class ProfileSettingsPage {
         }
     }
 
+    /**
+     * Timezone Methods
+     */
+    async clickTimezoneEditButton() {
+        console.log('🔍 Looking for timezone edit button (pen icon)...');
+        
+        // Try multiple selectors for the edit button
+        const editButtonSelectors = [
+            'button:has(svg):near([data-tour="user-profile-timezone"])',
+            'button[data-tour-action*="timezone"]',
+            'button:has([class*="edit"]):near([data-tour="user-profile-timezone"])',
+            'button:has(svg[class*="edit"])',
+            'button:has(svg[class*="pen"])',
+            '[data-tour="user-profile-timezone"] button',
+            'button:has(svg):has-text("")' // Empty button with SVG
+        ];
+        
+        let editButtonFound = false;
+        for (const selector of editButtonSelectors) {
+            try {
+                const button = this.page.locator(selector).first();
+                const count = await button.count();
+                if (count > 0) {
+                    console.log(`✅ Found timezone edit button with selector: ${selector}`);
+                    await button.click();
+                    editButtonFound = true;
+                    break;
+                }
+            } catch (error) {
+                continue;
+            }
+        }
+        
+        if (!editButtonFound) {
+            console.log('❌ Could not find timezone edit button');
+        }
+        
+        await this.page.waitForTimeout(500);
+    }
+
     async openTimezoneDropdown() {
         console.log('🔍 Attempting to open timezone dropdown...');
         
@@ -292,6 +333,10 @@ class ProfileSettingsPage {
     }
 
     async selectTimezone(timezone) {
+        // First click the edit button (pen icon) to enable timezone editing
+        await this.clickTimezoneEditButton();
+        
+        // Then open the dropdown
         await this.openTimezoneDropdown();
         
         // Wait for dropdown options to load
