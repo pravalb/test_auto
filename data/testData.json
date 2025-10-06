@@ -1,5 +1,31 @@
 {
-    "loginPageTitle": "Login - MyApp",
-    "displayName": "Pravilika",
-    "dashboardChatbotTitle": "Inbox"
+  "profileSettings": {
+    "validDisplayNames": [
+      "John Doe",
+      "Jane Smith", 
+      "Test User 123",
+      "María García",
+      "Ahmed Ali"
+    ],
+    "invalidDisplayNames": [
+      "",
+      "A",
+      "This display name is way too long and exceeds the maximum character limit"
+    ],
+    "timezones": [
+      "UTC+00:00 London",
+      "UTC+14:00 Kiritimati", 
+      "UTC-05:00 New York",
+      "UTC+09:00 Tokyo",
+      "UTC+05:30 Mumbai"
+    ],
+    "validationMessages": {
+      "displayNameRequired": "Display name is required",
+      "displayNameTooShort": "Display name must be at least 2 characters",
+      "displayNameTooLong": "Display name must be less than 30 characters",
+      "updateSuccess": "Profile updated successfully",
+      "updateError": "Failed to update profile"
+    }
+  }
 }
+
