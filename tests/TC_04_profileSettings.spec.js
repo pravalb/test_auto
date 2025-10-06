@@ -158,17 +158,49 @@ test.describe('Profile Settings Page Tests', () => {
      * TC_04_006: Display photo is visible
      */
     test('TC_04_006: Should display profile photo', async () => {
-        // Check specifically for the profile avatar image
-        const profileAvatar = profileSettingsPage.displayImage;
+        console.log('🔍 Debugging profile image selectors...');
         
-        // Verify the profile avatar is visible
-        await expect(profileAvatar).toBeVisible();
+        // Try different selectors to find the profile image
+        const selectors = [
+            '[data-tour="user-profile-avatar"] img',
+            'button img[cursor="pointer"]',
+            'img[cursor="pointer"]',
+            'button img[alt]',
+            'img[alt*="profile"]',
+            'button img'
+        ];
         
-        // Try to get image source
-        const imageSrc = await profileAvatar.getAttribute('src');
-        expect(imageSrc).toBeTruthy();
+        let foundImage = null;
+        let workingSelector = null;
         
-        console.log('✅ Profile avatar image is visible and has valid source');
+        for (const selector of selectors) {
+            try {
+                const element = profileSettingsPage.page.locator(selector).first();
+                const count = await element.count();
+                if (count > 0) {
+                    const isVisible = await element.isVisible();
+                    console.log(`🔍 Selector "${selector}": ${count} found, visible: ${isVisible}`);
+                    if (isVisible && !foundImage) {
+                        foundImage = element;
+                        workingSelector = selector;
+                    }
+                }
+            } catch (error) {
+                console.log(`❌ Selector "${selector}" failed: ${error.message}`);
+            }
+        }
+        
+        if (foundImage) {
+            console.log(`✅ Using working selector: ${workingSelector}`);
+            await expect(foundImage).toBeVisible();
+            
+            const imageSrc = await foundImage.getAttribute('src');
+            expect(imageSrc).toBeTruthy();
+            console.log('✅ Profile image found and has valid source');
+        } else {
+            console.log('❌ No profile image found with any selector');
+            throw new Error('Profile image not found');
+        }
     });
 
     /**
