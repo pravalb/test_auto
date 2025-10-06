@@ -16,7 +16,7 @@ class ProfileSettingsPage {
         this.backToSettingsLink = page.locator('a:has-text("Back to Settings"), button:has-text("Back")');
         
         // Display name elements
-        this.displayNameLabel = page.locator('label:has-text("Display name"), text="Display name"');
+        this.displayNameLabel = page.locator('label:has-text("Display name")').first();
         this.displayNameText = page.locator('p.flex-1.text-sm.text-foreground');
         this.displayNameValue = page.locator('p:has-text("Pravallika")').first();
         
@@ -27,10 +27,10 @@ class ProfileSettingsPage {
         this.displayNameCancelButton = page.locator('button[data-tour-action="name-cancel"]');
         
         // Account details
-        this.emailLabel = page.locator('label:has-text("Email"), text="Email"');
-        this.emailValue = page.locator('p:contains("@")').first();
-        this.timezoneLabel = page.locator('label:has-text("Timezone"), text="Timezone"');
-        this.timezoneValue = page.locator('text=/UTC[+-]\d{2}:\d{2}/').first();
+        this.emailLabel = page.locator('label:has-text("Email")').first();
+        this.emailValue = page.locator('p:has-text("@")').first();
+        this.timezoneLabel = page.locator('label:has-text("Timezone")').first();
+        this.timezoneValue = page.locator('p:has-text("UTC")').first();
         this.timezoneDropdown = page.locator('select, [role="combobox"]').first();
         
         // Display image elements
@@ -234,4 +234,3 @@ class ProfileSettingsPage {
 }
 
 module.exports = ProfileSettingsPage;
-
