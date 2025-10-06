@@ -34,8 +34,8 @@ class ProfileSettingsPage {
         this.timezoneEditButton = page.locator('button[data-tour-action="timezone-edit"]').first();
         this.timezoneDropdown = page.locator('[data-tour="user-profile-timezone"] button[role="combobox"]').first();
         
-        // Display image elements
-        this.displayImage = page.locator('img[alt*="profile"], img[alt*="avatar"], .profile-image, .avatar-image, img[src*="avatar"], img[src*="profile"], img.rounded, img.rounded-full, [data-testid*="avatar"], [data-testid*="profile"]').first();
+        // Display image elements - target specific profile avatar
+        this.displayImage = page.locator('[data-tour="user-profile-avatar"] img').first();
         this.imageEditButton = page.locator('button:has-text("Edit"), [aria-label*="edit"], button[data-testid*="edit"], .edit-button').first();
         this.imageUploadButton = page.locator('button:has-text("Upload"), input[type="file"], [data-testid*="upload"], .upload-button').first();
     }
