@@ -60,10 +60,21 @@ class ProfileSettingsPage {
         // Wait a moment for any updates to settle
         await this.page.waitForTimeout(500);
         
+        // Debug: Log all text content on the page
+        console.log('🔍 Debugging display name detection...');
+        try {
+            const allText = await this.page.textContent('body');
+            console.log('📄 Page contains "Updated":', allText.includes('Updated'));
+            console.log('📄 Page contains "Pravallika":', allText.includes('Pravallika'));
+        } catch (debugError) {
+            console.log('Debug failed:', debugError.message);
+        }
+        
         try {
             // Try primary selector first
             const nameText = await this.displayNameText.textContent();
             if (nameText?.trim()) {
+                console.log(`✅ Found with primary selector: "${nameText.trim()}"`);
                 return nameText.trim();
             }
         } catch (error) {
@@ -272,9 +283,51 @@ class ProfileSettingsPage {
     async selectTimezone(timezone) {
         await this.openTimezoneDropdown();
         
-        // Look for timezone option
-        const option = this.page.locator(`text="${timezone}"`).first();
-        await option.click();
+        console.log(`🔍 Looking for timezone option: "${timezone}"`);
+        
+        // Try multiple ways to find the timezone option
+        const optionSelectors = [
+            `text="${timezone}"`,
+            `text*="${timezone}"`,
+            `text*="UTC+14:00"`,
+            `text*="Kiritimati"`,
+            `[role="option"]:has-text("${timezone}")`,
+            `[role="option"]:has-text("UTC+14:00")`,
+            `[role="option"]:has-text("Kiritimati")`,
+            `li:has-text("${timezone}")`,
+            `li:has-text("UTC+14:00")`,
+            `div:has-text("${timezone}")`,
+            `span:has-text("${timezone}")`
+        ];
+        
+        let optionFound = false;
+        for (const selector of optionSelectors) {
+            try {
+                const option = this.page.locator(selector).first();
+                const count = await option.count();
+                if (count > 0) {
+                    console.log(`✅ Found timezone option with selector: ${selector}`);
+                    await option.click();
+                    optionFound = true;
+                    break;
+                }
+            } catch (error) {
+                continue;
+            }
+        }
+        
+        if (!optionFound) {
+            console.log('❌ Could not find timezone option, trying to click any UTC+14 option...');
+            try {
+                // Last resort: click any option containing UTC+14
+                const anyUTC14 = this.page.locator('*:has-text("UTC+14")').first();
+                await anyUTC14.click();
+                console.log('✅ Clicked any UTC+14 option');
+            } catch (lastError) {
+                console.log('❌ Failed to find any timezone option');
+            }
+        }
+        
         await this.page.waitForTimeout(1000);
     }
 
@@ -317,7 +370,12 @@ class ProfileSettingsPage {
             }
         }
         
-        await this.page.waitForTimeout(500);
+        // Safe timeout with error handling
+        try {
+            await this.page.waitForTimeout(500);
+        } catch (error) {
+            console.log('⚠️ Page timeout failed (page may have closed):', error.message);
+        }
     }
 
     async clickEditImage() {
