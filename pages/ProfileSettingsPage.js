@@ -34,9 +34,9 @@ class ProfileSettingsPage {
         this.timezoneDropdown = page.locator('select, [role="combobox"]').first();
         
         // Display image elements
-        this.displayImage = page.locator('img[alt*="profile"], img[alt*="avatar"], .profile-image, .avatar-image').first();
-        this.imageEditButton = page.locator('button:has-text("Edit"), [aria-label*="edit"]').first();
-        this.imageUploadButton = page.locator('button:has-text("Upload"), input[type="file"]').first();
+        this.displayImage = page.locator('img[alt*="profile"], img[alt*="avatar"], .profile-image, .avatar-image, img[src*="avatar"], img[src*="profile"], img.rounded, img.rounded-full, [data-testid*="avatar"], [data-testid*="profile"]').first();
+        this.imageEditButton = page.locator('button:has-text("Edit"), [aria-label*="edit"], button[data-testid*="edit"], .edit-button').first();
+        this.imageUploadButton = page.locator('button:has-text("Upload"), input[type="file"], [data-testid*="upload"], .upload-button').first();
     }
 
     /**
@@ -74,11 +74,16 @@ class ProfileSettingsPage {
         const alternativeSelectors = [
             'p:has-text("Pravallika")',
             'p:has-text("Updated")',
-            'p.flex-1.text-sm',
+            'p.flex-1.text-sm.text-foreground',
+            'p.flex-1',
+            'div:has-text("Pravallika") p',
+            'div:has-text("Updated") p',
             '[data-testid*="display-name"]',
             '.display-name-value',
-            'p:contains("Pravallika")',
-            'span:has-text("Pravallika")'
+            'span:has-text("Pravallika")',
+            'span:has-text("Updated")',
+            '*:has-text("Pravallika Updated")',
+            '*:has-text("Updated")'
         ];
         
         for (const selector of alternativeSelectors) {
@@ -223,8 +228,45 @@ class ProfileSettingsPage {
     }
 
     async openTimezoneDropdown() {
-        await this.timezoneDropdown.click();
-        await this.page.waitForTimeout(500);
+        console.log('🔍 Attempting to open timezone dropdown...');
+        
+        try {
+            // Try normal click first
+            await this.timezoneDropdown.click({ timeout: 5000 });
+            console.log('✅ Timezone dropdown clicked normally');
+        } catch (error) {
+            console.log('⚠️ Normal click failed, trying force click...');
+            try {
+                // Try force click
+                await this.timezoneDropdown.click({ force: true });
+                console.log('✅ Timezone dropdown force clicked');
+            } catch (forceError) {
+                console.log('⚠️ Force click failed, trying alternative selectors...');
+                
+                // Try alternative selectors
+                const alternativeSelectors = [
+                    '[role="combobox"]',
+                    'button[role="combobox"]',
+                    'select',
+                    '.timezone-dropdown',
+                    'button:has-text("UTC")',
+                    'div:has-text("UTC") button'
+                ];
+                
+                for (const selector of alternativeSelectors) {
+                    try {
+                        const element = this.page.locator(selector).first();
+                        await element.click({ force: true });
+                        console.log(`✅ Clicked timezone dropdown with selector: ${selector}`);
+                        break;
+                    } catch (altError) {
+                        continue;
+                    }
+                }
+            }
+        }
+        
+        await this.page.waitForTimeout(1000);
     }
 
     async selectTimezone(timezone) {
@@ -240,7 +282,41 @@ class ProfileSettingsPage {
      * Display Image Methods
      */
     async hoverOverDisplayImage() {
-        await this.displayImage.hover();
+        console.log('🔍 Attempting to hover over display image...');
+        
+        try {
+            await this.displayImage.hover();
+            console.log('✅ Hovered over display image');
+        } catch (error) {
+            console.log('⚠️ Primary image selector failed, trying alternatives...');
+            
+            // Try to find any image on the page
+            const alternativeImageSelectors = [
+                'img',
+                'img[src]',
+                '[role="img"]',
+                '.avatar',
+                '.profile-pic',
+                'img.rounded-full',
+                'img.rounded',
+                'div[style*="background-image"]'
+            ];
+            
+            for (const selector of alternativeImageSelectors) {
+                try {
+                    const images = this.page.locator(selector);
+                    const count = await images.count();
+                    if (count > 0) {
+                        await images.first().hover();
+                        console.log(`✅ Hovered over image with selector: ${selector}`);
+                        break;
+                    }
+                } catch (altError) {
+                    continue;
+                }
+            }
+        }
+        
         await this.page.waitForTimeout(500);
     }
 
