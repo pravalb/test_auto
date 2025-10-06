@@ -32,7 +32,7 @@ class ProfileSettingsPage {
         this.timezoneLabel = page.locator('label:has-text("Timezone")').first();
         this.timezoneValue = page.locator('p:has-text("UTC")').first();
         this.timezoneEditButton = page.locator('button[data-tour-action="timezone-edit"]').first();
-        this.timezoneDropdown = page.locator('select, [role="combobox"]').first();
+        this.timezoneDropdown = page.locator('[data-tour="user-profile-timezone"] [role="combobox"], [data-tour="user-profile-timezone"] select, div:has-text("Timezone") + div [role="combobox"]').first();
         
         // Display image elements
         this.displayImage = page.locator('img[alt*="profile"], img[alt*="avatar"], .profile-image, .avatar-image, img[src*="avatar"], img[src*="profile"], img.rounded, img.rounded-full, [data-testid*="avatar"], [data-testid*="profile"]').first();
@@ -259,12 +259,12 @@ class ProfileSettingsPage {
         // Try multiple selectors for the edit button (prioritize exact match)
         const editButtonSelectors = [
             'button[data-tour-action="timezone-edit"]', // Exact match from user's HTML
-            'button[data-tour-action*="timezone"]',     // Partial match fallback
-            '[data-tour="user-profile-timezone"] button', // Button within timezone section
-            'button:has(svg.lucide-pen-line)',          // Button with pen icon
-            'button:has(svg[class*="pen"])',            // Button with pen in class
-            'button:has(svg):near([data-tour="user-profile-timezone"])', // SVG button near timezone
-            'button:has([class*="edit"]):near([data-tour="user-profile-timezone"])'
+            '[data-tour="user-profile-timezone"] button[data-tour-action="timezone-edit"]', // More specific
+            '[data-tour="user-profile-timezone"] button:has(svg)', // Button with SVG in timezone section
+            'div:has-text("Timezone") + div button', // Button after Timezone label
+            'div:has-text("UTC") button', // Button near UTC text
+            'button:has(svg.lucide-pen-line)', // Button with pen icon
+            'button[data-tour-action*="timezone"]' // Partial match fallback
         ];
         
         let editButtonFound = false;
@@ -306,14 +306,15 @@ class ProfileSettingsPage {
             } catch (forceError) {
                 console.log('⚠️ Force click failed, trying alternative selectors...');
                 
-                // Try alternative selectors
+                // Try alternative selectors (more specific to timezone section)
                 const alternativeSelectors = [
-                    '[role="combobox"]',
+                    '[data-tour="user-profile-timezone"] [role="combobox"]', // Combobox in timezone section
+                    '[data-tour="user-profile-timezone"] select', // Select in timezone section
+                    'div:has-text("Timezone") + div [role="combobox"]', // Combobox after Timezone label
+                    'div:has-text("UTC") [role="combobox"]', // Combobox near UTC text
+                    '[role="combobox"]', // Generic combobox
                     'button[role="combobox"]',
-                    'select',
-                    '.timezone-dropdown',
-                    'button:has-text("UTC")',
-                    'div:has-text("UTC") button'
+                    'select'
                 ];
                 
                 for (const selector of alternativeSelectors) {
