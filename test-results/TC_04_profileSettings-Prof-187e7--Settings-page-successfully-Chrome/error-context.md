@@ -1,0 +1,125 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - generic [ref=e6]:
+      - generic [ref=e10]: D
+      - list [ref=e14]:
+        - listitem [ref=e15]:
+          - link "Conversations" [ref=e16] [cursor=pointer]:
+            - /url: /dashboard?inboxType=live&orgid=27fcad5c-a175-4c49-93f4-a6642044d44a
+            - img [ref=e17] [cursor=pointer]
+            - generic: Conversations
+        - listitem [ref=e19]:
+          - link "Emails" [ref=e20] [cursor=pointer]:
+            - /url: /dashboard?inboxType=emails&orgid=27fcad5c-a175-4c49-93f4-a6642044d44a
+            - img [ref=e21] [cursor=pointer]
+            - generic: Emails
+        - listitem [ref=e24]:
+          - link "Analytics" [ref=e25] [cursor=pointer]:
+            - /url: /analytics
+            - img [ref=e26] [cursor=pointer]
+            - generic: Analytics
+        - listitem [ref=e29]:
+          - link "Chatbot" [ref=e30] [cursor=pointer]:
+            - /url: /chatbot
+            - img [ref=e31] [cursor=pointer]
+            - generic: Chatbot
+        - listitem [ref=e33]:
+          - link "Settings" [ref=e34] [cursor=pointer]:
+            - /url: /settings
+            - img [ref=e35] [cursor=pointer]
+            - generic: Settings
+      - list [ref=e39]:
+        - listitem [ref=e40]:
+          - link "Upgrade" [ref=e41] [cursor=pointer]:
+            - /url: /settings?section=subscriptions
+            - img [ref=e42] [cursor=pointer]
+            - text: Upgrade
+        - listitem [ref=e44]:
+          - button "Invite Teammates" [ref=e45] [cursor=pointer]:
+            - img [ref=e46] [cursor=pointer]
+            - text: Invite Teammates
+        - listitem [ref=e49]:
+          - button "Pravallika" [ref=e50] [cursor=pointer]:
+            - img "Pravallika" [ref=e52] [cursor=pointer]
+    - generic [ref=e54]:
+      - generic [ref=e57]:
+        - combobox [ref=e59] [cursor=pointer]:
+          - generic: Don't Remove
+          - img [ref=e60] [cursor=pointer]
+        - 'button "Getting started: 29% complete. Open checklist." [ref=e62] [cursor=pointer]':
+          - img [ref=e63] [cursor=pointer]
+          - generic [ref=e66] [cursor=pointer]: 29%
+        - button "Pravallika" [ref=e67] [cursor=pointer]:
+          - img "Pravallika" [ref=e69] [cursor=pointer]
+      - generic [ref=e71]:
+        - generic [ref=e72]:
+          - generic [ref=e73]:
+            - heading "Settings" [level=1] [ref=e74]
+            - link "Back to Settings" [ref=e75] [cursor=pointer]:
+              - /url: /settings
+              - img
+              - text: Back to Settings
+          - generic [ref=e76]:
+            - generic [ref=e78]:
+              - button [ref=e79] [cursor=pointer]:
+                - img [ref=e80] [cursor=pointer]
+              - button [ref=e86] [cursor=pointer]:
+                - img [ref=e87] [cursor=pointer]
+              - button [ref=e89] [cursor=pointer]:
+                - img [ref=e90] [cursor=pointer]
+            - generic [ref=e92]: If you prefer a darker theme, you can set your Hilal to dark mode.
+        - generic [ref=e93]:
+          - generic [ref=e94]:
+            - img [ref=e97] [cursor=pointer]
+            - generic [ref=e99]:
+              - generic [ref=e100]: Display name
+              - generic [ref=e101]:
+                - paragraph [ref=e102]: Pravallika
+                - button [ref=e103] [cursor=pointer]:
+                  - img
+          - generic [ref=e104]:
+            - heading "Account Details" [level=3] [ref=e105]
+            - generic [ref=e106]:
+              - generic [ref=e107]:
+                - generic [ref=e108]: Email
+                - paragraph [ref=e109]: pravallika2330@gmail.com
+              - generic [ref=e110]:
+                - generic [ref=e111]: Timezone
+                - generic [ref=e112]:
+                  - paragraph [ref=e113]: UTC+13:00 Enderbury
+                  - button [ref=e114] [cursor=pointer]:
+                    - img
+        - button "Open tour helper" [ref=e116] [cursor=pointer]:
+          - img
+          - img
+          - img
+          - img
+  - button "Open chat" [ref=e119] [cursor=pointer]:
+    - img [ref=e120] [cursor=pointer]
+  - generic [ref=e124]:
+    - generic [ref=e125]:
+      - button [ref=e127] [cursor=pointer]:
+        - img
+      - generic [ref=e128]:
+        - generic [ref=e129]:
+          - img "Microsoft Teams" [ref=e131]
+          - generic [ref=e133]: "1"
+        - generic [ref=e134]:
+          - img "Slack" [ref=e136]
+          - generic [ref=e138]: "1"
+    - heading "Get notified about your tasks" [level=3] [ref=e139]
+    - paragraph [ref=e140]: Get task and comment updates in Microsoft Teams or Slack.
+    - generic [ref=e141]:
+      - button "Microsoft Teams Connect Teams" [ref=e142] [cursor=pointer]:
+        - img "Microsoft Teams" [ref=e143] [cursor=pointer]
+        - generic [ref=e144] [cursor=pointer]: Connect Teams
+      - button "Slack Connect Slack" [ref=e145] [cursor=pointer]:
+        - img "Slack" [ref=e146] [cursor=pointer]
+        - generic [ref=e147] [cursor=pointer]: Connect Slack
+    - button "Never show this again" [ref=e148] [cursor=pointer]
+  - region "Notifications alt+T"
+  - alert [ref=e149]
+```

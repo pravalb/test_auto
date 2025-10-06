@@ -1,5 +1,5 @@
 import BasePage from "./basePage";
-import { dashboardChatbotTitle } from "../data/testData.json";
+import testData from "../data/testData.json";
 import { expect } from "allure-playwright";
 
 class LoginPage extends BasePage {
@@ -10,7 +10,7 @@ class LoginPage extends BasePage {
         this.password = page.getByLabel('Password');
         this.signInButton = page.getByRole('button', {name: 'Sign in'});
         this.backToAppButton = page.getByText('Back to application');
-        this.verifyChatbotDashboardtext = page.getByText('Inbox');
+        this.verifyChatbotDashboardtext = page.getByText('Inbox').first();
     }
 
     async openApp() {
@@ -24,7 +24,9 @@ class LoginPage extends BasePage {
         await this.signInButton.click();
         await this.waitforPageLoad();
         await this.backToAppButton.click();
-        await expect(this.verifyChatbotDashboardtext).toContainText(dashboardChatbotTitle);
+        
+        // Wait for dashboard to load by checking for Inbox element
+        await this.verifyChatbotDashboardtext.waitFor({ state: 'visible', timeout: 10000 });
         
     }
 

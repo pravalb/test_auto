@@ -1,0 +1,196 @@
+{
+  "profileSettings": {
+    "validDisplayNames": [
+      "John Doe",
+      "Jane Smith", 
+      "Test User 123",
+      "محمد علي",
+      "José García",
+      "AB",
+      "Very Long Display Name Valid"
+    ],
+    "invalidDisplayNames": [
+      "",
+      "   ",
+      "A",
+      "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+    ],
+    "validationMessages": {
+      "displayNameRequired": "Display name is required",
+      "displayNameTooShort": "Display name must be at least 2 characters", 
+      "displayNameTooLong": "Display name must be less than 30 characters",
+      "updateSuccess": "Profile updated successfully",
+      "updateError": "Failed to update profile"
+    },
+    "timezones": [
+      "UTC+00:00 Enderbury",
+      "UTC+14:00 Kiritimati",
+      "UTC-13:45 Chatham", 
+      "UTC-13:00 McMurdo",
+      "UTC-13:00 Apia",
+      "UTC-13:00 Auckland",
+      "UTC-13:00 Fakaofo",
+      "UTC-13:00 Tongatapu",
+      "UTC-12:00 Anadyr"
+    ],
+    "imageFormats": {
+      "supported": [".jpg", ".jpeg", ".png", ".webp", ".gif"],
+      "unsupported": [".pdf", ".doc", ".txt", ".mp4", ".svg"]
+    },
+    "imageSizeLimits": {
+      "maxSizeBytes": 5242880,
+      "minWidth": 100,
+      "minHeight": 100,
+      "maxWidth": 4000,
+      "maxHeight": 4000
+    },
+    "imageFiles": {
+      "validJpeg": "data/test-images/profile-image.jpg",
+      "validPng": "data/test-images/profile-image.png", 
+      "validWebp": "data/test-images/profile-image.webp",
+      "invalidFormat": "data/test-files/document.pdf",
+      "tooLarge": "data/test-images/large-image.jpg",
+      "tooSmall": "data/test-images/tiny-image.jpg"
+    },
+    "transformControls": {
+      "zoom": {
+        "min": 50,
+        "max": 200,
+        "default": 100,
+        "step": 10
+      },
+      "rotation": {
+        "min": 0,
+        "max": 360,
+        "default": 0,
+        "step": 15
+      },
+      "brightness": {
+        "min": 50,
+        "max": 150,
+        "default": 100,
+        "step": 5
+      },
+      "contrast": {
+        "min": 50,
+        "max": 150,
+        "default": 100,
+        "step": 5
+      },
+      "saturation": {
+        "min": 0,
+        "max": 200,
+        "default": 100,
+        "step": 10
+      }
+    }
+  },
+  "testEnvironments": {
+    "development": {
+      "baseUrl": "https://dev.chat.hilalsoftware.tools",
+      "authUrl": "https://dev.auth.hilalsoftware.tools/hilal-chatbot/login",
+      "profileSettingsUrl": "https://dev.chat.hilalsoftware.tools/settings/profile"
+    },
+    "staging": {
+      "baseUrl": "https://staging.chat.hilalsoftware.tools", 
+      "authUrl": "https://staging.auth.hilalsoftware.tools/hilal-chatbot/login",
+      "profileSettingsUrl": "https://staging.chat.hilalsoftware.tools/settings/profile"
+    },
+    "production": {
+      "baseUrl": "https://chat.hilalsoftware.tools",
+      "authUrl": "https://auth.hilalsoftware.tools/hilal-chatbot/login",
+      "profileSettingsUrl": "https://chat.hilalsoftware.tools/settings/profile"
+    }
+  },
+  "testUsers": {
+    "validUser": {
+      "email": "pravallika2330@gmail.com",
+      "password": "HilalPassword@123",
+      "displayName": "Test User",
+      "timezone": "UTC+05:30 Asia/Kolkata"
+    },
+    "testUser": {
+      "email": "test.user@hilalsoftware.tools",
+      "password": "TestPassword@123",
+      "displayName": "Test User",
+      "timezone": "UTC+00:00 UTC"
+    },
+    "invalidUser": {
+      "email": "invalid.email@domain",
+      "password": "weak",
+      "displayName": "",
+      "timezone": "Invalid/Timezone"
+    }
+  },
+  "browserSettings": {
+    "viewports": {
+      "mobile": {
+        "width": 375,
+        "height": 667
+      },
+      "tablet": {
+        "width": 768,
+        "height": 1024
+      },
+      "desktop": {
+        "width": 1920,
+        "height": 1080
+      },
+      "ultrawide": {
+        "width": 2560,
+        "height": 1440
+      }
+    },
+    "timeouts": {
+      "pageLoad": 30000,
+      "elementWait": 10000,
+      "apiResponse": 15000,
+      "fileUpload": 20000
+    }
+  },
+  "apiEndpoints": {
+    "profile": {
+      "get": "/api/user/profile",
+      "update": "/api/user/profile",
+      "uploadImage": "/api/user/profile/image"
+    },
+    "settings": {
+      "get": "/api/user/settings",
+      "update": "/api/user/settings"
+    },
+    "auth": {
+      "login": "/api/auth/login",
+      "logout": "/api/auth/logout",
+      "refresh": "/api/auth/refresh"
+    }
+  },
+  "errorMessages": {
+    "network": {
+      "timeout": "Request timed out",
+      "offline": "Network connection lost",
+      "serverError": "Internal server error"
+    },
+    "validation": {
+      "required": "This field is required",
+      "invalid": "Invalid input format",
+      "tooLong": "Input exceeds maximum length",
+      "tooShort": "Input below minimum length"
+    },
+    "auth": {
+      "unauthorized": "Authentication required",
+      "forbidden": "Access denied",
+      "sessionExpired": "Session has expired"
+    }
+  },
+  "successMessages": {
+    "profile": {
+      "updated": "Profile updated successfully",
+      "imageUploaded": "Profile image uploaded successfully",
+      "settingsSaved": "Settings saved successfully"
+    },
+    "auth": {
+      "loginSuccess": "Login successful",
+      "logoutSuccess": "Logout successful"
+    }
+  }
+}
