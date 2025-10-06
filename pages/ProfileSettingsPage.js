@@ -31,7 +31,7 @@ class ProfileSettingsPage {
         this.emailValue = page.locator('p:has-text("@")').first();
         this.timezoneLabel = page.locator('label:has-text("Timezone")').first();
         this.timezoneValue = page.locator('p:has-text("UTC")').first();
-        this.timezoneEditButton = page.locator('button:has(svg):near([data-tour="user-profile-timezone"]), button[data-tour-action*="timezone"], button:has([class*="edit"]):near([data-tour="user-profile-timezone"]), button:has(svg[class*="edit"])').first();
+        this.timezoneEditButton = page.locator('button[data-tour-action="timezone-edit"]').first();
         this.timezoneDropdown = page.locator('select, [role="combobox"]').first();
         
         // Display image elements
@@ -256,15 +256,15 @@ class ProfileSettingsPage {
     async clickTimezoneEditButton() {
         console.log('🔍 Looking for timezone edit button (pen icon)...');
         
-        // Try multiple selectors for the edit button
+        // Try multiple selectors for the edit button (prioritize exact match)
         const editButtonSelectors = [
-            'button:has(svg):near([data-tour="user-profile-timezone"])',
-            'button[data-tour-action*="timezone"]',
-            'button:has([class*="edit"]):near([data-tour="user-profile-timezone"])',
-            'button:has(svg[class*="edit"])',
-            'button:has(svg[class*="pen"])',
-            '[data-tour="user-profile-timezone"] button',
-            'button:has(svg):has-text("")' // Empty button with SVG
+            'button[data-tour-action="timezone-edit"]', // Exact match from user's HTML
+            'button[data-tour-action*="timezone"]',     // Partial match fallback
+            '[data-tour="user-profile-timezone"] button', // Button within timezone section
+            'button:has(svg.lucide-pen-line)',          // Button with pen icon
+            'button:has(svg[class*="pen"])',            // Button with pen in class
+            'button:has(svg):near([data-tour="user-profile-timezone"])', // SVG button near timezone
+            'button:has([class*="edit"]):near([data-tour="user-profile-timezone"])'
         ];
         
         let editButtonFound = false;
