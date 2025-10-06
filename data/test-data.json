@@ -106,7 +106,7 @@
     "validUser": {
       "email": "pravallika2330@gmail.com",
       "password": "HilalPassword@123",
-      "displayName": "Pravallika",
+      "displayName": "Test User",
       "timezone": "UTC+05:30 Asia/Kolkata"
     },
     "testUser": {

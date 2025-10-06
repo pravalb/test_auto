@@ -18,7 +18,7 @@ class ProfileSettingsPage {
         // Display name elements
         this.displayNameLabel = page.locator('label:has-text("Display name")').first();
         this.displayNameText = page.locator('p.flex-1.text-sm.text-foreground');
-        this.displayNameValue = page.locator('p:has-text("Pravallika")').first();
+        this.displayNameValue = page.locator('[data-tour="user-profile-display-name"] p, p[class*="display"], p[class*="name"]').first();
         
         // Edit functionality
         this.displayNameEditButton = page.locator('button[data-tour-action="name-edit"]');
@@ -66,7 +66,7 @@ class ProfileSettingsPage {
         try {
             const allText = await this.page.textContent('body');
             console.log('📄 Page contains "Updated":', allText.includes('Updated'));
-            console.log('📄 Page contains "Pravallika":', allText.includes('Pravallika'));
+            console.log('📄 Page contains display name text:', allText.length > 0);
         } catch (debugError) {
             console.log('Debug failed:', debugError.message);
         }
@@ -89,13 +89,12 @@ class ProfileSettingsPage {
             '[data-tour="user-profile-name"] p',
             '[data-tour="user-profile-name"] span',
             'div.flex-1.w-full.sm\\:w-auto',
-            'p:has-text("Pravallika")',
-            'p:has-text("Updated")',
-            'div:has-text("Pravallika")',
-            'div:has-text("Updated")',
-            'span:has-text("Pravallika")',
-            'span:has-text("Updated")',
-            '*:has-text("Pravallika Updated")',
+            'p[class*="display"]',
+            'p[class*="name"]',
+            'div[class*="display"]',
+            'div[class*="name"]',
+            'span[class*="display"]',
+            'span[class*="name"]',
             '*:has-text("Updated")'
         ];
         

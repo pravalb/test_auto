@@ -88,7 +88,7 @@ test.describe('Profile Settings Page Tests', () => {
         console.log(`📝 Original name: "${originalName}"`);
         
         // Edit display name
-        const newName = 'Pravallika Updated';
+        const newName = 'Updated Display Name';
         await profileSettingsPage.clickEditDisplayName();
         await expect(profileSettingsPage.displayNameInput).toBeVisible();
         
@@ -158,23 +158,17 @@ test.describe('Profile Settings Page Tests', () => {
      * TC_04_006: Display photo is visible
      */
     test('TC_04_006: Should display profile photo', async () => {
-        // Check if any image exists on the page
-        const anyImage = profileSettingsPage.page.locator('img').first();
-        const imageCount = await profileSettingsPage.page.locator('img').count();
+        // Check specifically for the profile avatar image
+        const profileAvatar = profileSettingsPage.displayImage;
         
-        if (imageCount > 0) {
-            // Verify at least one image is visible
-            await expect(anyImage).toBeVisible();
-            
-            // Try to get image source
-            const imageSrc = await anyImage.getAttribute('src');
-            expect(imageSrc).toBeTruthy();
-            
-            console.log(`✅ Found ${imageCount} image(s) on page, first one is visible`);
-        } else {
-            console.log('ℹ️ No images found on profile settings page');
-            // This might be expected if profile photos are not implemented yet
-        }
+        // Verify the profile avatar is visible
+        await expect(profileAvatar).toBeVisible();
+        
+        // Try to get image source
+        const imageSrc = await profileAvatar.getAttribute('src');
+        expect(imageSrc).toBeTruthy();
+        
+        console.log('✅ Profile avatar image is visible and has valid source');
     });
 
     /**
@@ -296,7 +290,7 @@ test.describe('Profile Settings Page Tests', () => {
         console.log('✅ Changes persist after page refresh');
         
         // Cleanup
-        await profileSettingsPage.changeDisplayName('Pravallika');
+        await profileSettingsPage.changeDisplayName('Test User');
     });
 
     // Cleanup after each test
