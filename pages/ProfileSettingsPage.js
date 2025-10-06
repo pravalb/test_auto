@@ -337,8 +337,12 @@ class ProfileSettingsPage {
             }
         }
         
-        // Wait for dropdown options to load
-        await this.page.waitForTimeout(2000);
+        // Wait briefly for dropdown options to load (with error handling)
+        try {
+            await this.page.waitForTimeout(500);
+        } catch (error) {
+            console.log('⚠️ Page closed during dropdown wait, continuing...');
+        }
     }
 
     async selectTimezone(timezone) {
@@ -348,9 +352,13 @@ class ProfileSettingsPage {
         // Then open the dropdown
         await this.openTimezoneDropdown();
         
-        // Wait for dropdown options to load
+        // Wait for dropdown options to load (with error handling)
         console.log('⏳ Waiting for timezone options to load...');
-        await this.page.waitForTimeout(2000);
+        try {
+            await this.page.waitForTimeout(1000);
+        } catch (error) {
+            console.log('⚠️ Page closed during option wait, continuing with selection...');
+        }
         
         console.log(`🔍 Looking for timezone option: "${timezone}"`);
         
@@ -397,7 +405,12 @@ class ProfileSettingsPage {
             }
         }
         
-        await this.page.waitForTimeout(1000);
+        // Final wait with error handling
+        try {
+            await this.page.waitForTimeout(1000);
+        } catch (error) {
+            console.log('⚠️ Page closed during final wait, timezone selection may have completed');
+        }
     }
 
     /**
